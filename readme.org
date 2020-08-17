@@ -4,8 +4,8 @@ There's no place like ::1!
 
 ** LICENSE
 
-#+begin_src 
-/*
+#+begin_src
+*
  * Copyright (c) 2020 Aaron Bieber <aaron@bolddaemon.com>
  *
  * Permission to use, copy, modify, and distribute this software for any
@@ -21,7 +21,3 @@ There's no place like ::1!
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 #+end_src
-
-
-
-
