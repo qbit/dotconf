@@ -20,8 +20,11 @@ load_completion rc
 #load_completion gopass
 load_completion git
 
-alias vi=vim
+alias cdw='cd $(make show=WRKSRC)'
 alias dotconf='/usr/local/bin/git --git-dir=$HOME/.dotconf --work-tree=$HOME'
+alias mutt='stty discard undef; neomutt'
+alias tmux="tmux -u2"
+alias vi=vim
 
 # the q prompt auto-loads the git-prompt extension
 set_prompt q
