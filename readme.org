@@ -1,6 +1,17 @@
 * dotconf
 
-There's no place like ::1!
+There's no place like ~::1~!
+
+The idea for managing dot files in this way came from [[https://news.ycombinator.com/item?id=11071754][here]].
+
+** Install
+
+#+begin_src shell
+git clone --separate-git-dir=~/.dotconf git@git.sr.ht:~qbit/dotconf /tmp/dotconf
+rm -rf /tmp/dotconf
+alias dotconf='/usr/local/bin/git --git-dir=$HOME/.dotconf --work-tree=$HOME'
+dotconf pull
+#+end_src
 
 ** LICENSE
 
