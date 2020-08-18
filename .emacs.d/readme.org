@@ -65,7 +65,7 @@ If we are on OpenBSD, fill the scratch buffer with fortune \o/.
 (if (file-executable-p "/usr/games/fortune")
     (setq initial-scratch-message
 	  (concat
-	   (shell-command-to-string "fortune | sed -e 's/^/;; /g'")
+	   (shell-command-to-string "/usr/games/fortune | sed -e 's/^/;; /g'")
 	   "\n\n")))
 #+end_src
 
