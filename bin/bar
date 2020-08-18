@@ -52,13 +52,24 @@ END {
 EOF
 )
 
-# TODO check lengte and make sure we aren't wayy off base
+net() {
+	local n net
+	n=$(ifconfig egress 2>/dev/null | grep "inet")
+	net=$(echo "$n" | awk '{print $2}')
+	printf "%s" "${net}"
+}
+
+# TODO check length and make sure we aren't wayy off base
 wifi() {
 	local w sig ssid
-	w=$(ifconfig wlan | grep "ieee80211")
-	ssid="$(echo "$w" | awk "${wifi_ssid}")"
-	sig="$(echo "$w" | awk "${wifi_sig}")"
-	printf "%s : %s" "${ssid}" "${sig}"
+	w=$(ifconfig wlan 2>/dev/null | grep "ieee80211")
+	if [ $? == 0 ]; then
+		ssid="$(echo "$w" | awk "${wifi_ssid}")"
+		sig="$(echo "$w" | awk "${wifi_sig}")"
+		printf "%s : %s" "${ssid}" "${sig}"
+	else
+		printf "%s" "$(net)"
+	fi
 }
 
 beat() {
@@ -129,17 +140,19 @@ battery() {
 }
 
 mail() {
-	set -A mail_list $(ls -1 ~/Maildir | egrep -vi "gmail|trash")
-	count=0
-	for dir in "${mail_list[@]}"; do
-		echo -n "${dir}:"
-		ls -1 ~/Maildir/${dir}/Inbox/new | wc -l | \
-			awk '{ if ($1 > 0) { printf $1 } else { printf "0" }}'
-		count=$((count+1))
-		if [ $count -ne ${#mail_list[@]} ]; then
-			echo -n ","
-		fi
-	done
+	if [ -d ~/Maildir ]; then
+		set -A mail_list $(ls -1 ~/Maildir | egrep -vi "gmail|trash")
+		count=0
+		for dir in "${mail_list[@]}"; do
+			echo -n "${dir}:"
+			ls -1 ~/Maildir/${dir}/Inbox/new | wc -l | \
+				awk '{ if ($1 > 0) { printf $1 } else { printf "0" }}'
+			count=$((count+1))
+			if [ $count -ne ${#mail_list[@]} ]; then
+				echo -n ","
+			fi
+		done
+	fi
 }
 
 vmm() {
