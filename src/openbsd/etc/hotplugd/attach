@@ -1,0 +1,10 @@
+#!/bin/sh
+
+DEVCLASS=$1
+DEVNAME=$2
+
+case "$DEVNAME" in
+	fido0)
+		pkill -USR1 -xf "/usr/bin/perl /usr/local/bin/fido"
+	;;
+esac
