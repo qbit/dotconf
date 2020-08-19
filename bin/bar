@@ -66,7 +66,7 @@ wifi() {
 	if [ $? == 0 ]; then
 		ssid="$(echo "$w" | awk "${wifi_ssid}")"
 		sig="$(echo "$w" | awk "${wifi_sig}")"
-		printf "%s : %s" "${ssid}" "${sig}"
+		printf "%s : %s : %s" "${ssid}" "${sig}" "$(net)"
 	else
 		printf "%s" "$(net)"
 	fi
@@ -167,6 +167,6 @@ vmm() {
 	fi
 }
 
-printf "%%{l} %s | %s | %%{A:apm -A:}%%{A2:apm -L:}%%{A3:apm -H:}%s%%{A}%%{A}%%{A} | %s %%{r} %s | %s | %s | %s | @%s " \
+printf "%%{l} %s | %s | %%{A:apm -A:}%%{A2:apm -L:}%%{A3:apm -H:}%s%%{A}%%{A}%%{A} | %s %%{r} %s | %s | %s | @%s " \
 	"$(battery)" "$(temp)" "$(hz)" "$(mem)" \
-	"$(vmm)" "$(mail)" "$(wifi)" "$(date '+%Y-%m-%d %H:%M')" "$(beat)"
+	"$(vmm)" "$(wifi)" "$(date '+%Y-%m-%d %H:%M')" "$(beat)"
