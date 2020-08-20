@@ -1,0 +1,59 @@
+sticky yes
+gap 18 1 1 1
+snapdist 10
+
+ignore dock
+ignore menu
+ignore panel
+
+fontname "Go Regular:pixelsize=13"
+
+borderwidth		2
+color activeborder	"#99aab9"
+color font		"#eeeeff"
+color inactiveborder	"#000000"
+color menubg		"#798a99"
+color menufg		"#eeeeff"
+color urgencyborder	"red"
+
+command "Browser"	"~/bin/browser"
+command	"Terminal"	"/usr/X11R6/bin/xterm"
+command	"Emacs"		"/usr/local/bin/emacs"
+
+# make emacs usable again
+unbind-key	C-slash
+unbind-key	CM-f
+unbind-key	CM-a
+unbind-key	CM-h
+unbind-key	CM-j
+unbind-key	CM-k
+unbind-key	CM-l
+unbind-key	M-period
+unbind-key	M-h
+unbind-key	M-j
+unbind-key	M-k
+unbind-key	M-l
+
+bind-key	M-r		"rofi -show run"
+bind-key	MS-r		restart
+bind-key	MS-n		"mpc next"
+bind-key	MS-p		"mpc toggle"
+bind-key	MS-i		"/home/qbit/.screenlayout/internal.sh"
+bind-key	MS-e		"/home/qbit/.screenlayout/external.sh"
+bind-key	MS-equal	window-vtile
+bind-key	M-equal		window-htile
+bind-key	MC-l		lock
+
+unbind-key	C-slash
+
+autogroup 1	"chromium-browser,Chromium-browser"
+autogroup 1	"Navigator,Firefox"
+autogroup 1	"Xephyr"
+autogroup 2	"xterm,XTerm"
+autogroup 3	"emacs,Emacs"
+autogroup 4	"drawterm,DrawTerm"
+autogroup 5	"jetbrains-goland,jetbrains-goland"
+autogroup 9	"xconsole,XConsole"
+
+bind-mouse MS-1	menu-window
+bind-mouse M-3	window-resize

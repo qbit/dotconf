@@ -1,0 +1,50 @@
+#!/bin/ksh
+
+ROOT=$(lswin -r)
+W=$(wattr w ${ROOT})
+H=$(wattr h ${ROOT})
+
+# Layout
+#         x
+#   ______________
+#   | brw  |     |
+#   |  0   |     |
+#   |______| xtm |
+# y | emx  |  2  |
+#   |  1   |     |
+#   |      |     |
+#   --------------
+
+set -A windows
+
+for i in $(lswin); do
+	n=$(wname $i)
+	case $n in
+		emacs*)
+			echo "[X] emacs $i"
+			windows[1]=$i
+			;;
+		Main*)
+			echo "[X] ksh $i"
+			windows[2]=$i
+			;;
+		*)
+			echo "[X] chrome $i"
+			windows[0]=$i
+	esac
+done
+
+OS=18
+GAP=3
+
+Y=$((H-OS-GAP))
+
+HH=$((H/2))
+HW=$((W/2))
+HOS=$((OS/2))
+
+echo "Moving ${#windows[@]} windows"
+# wtp	x		y		w		h			id
+wtp	$((0+GAP))	$((OS+GAP))	$((HW-GAP))	$((HH-HOS))		${windows[0]} # chrome
+wtp	$((0+GAP))	$((OS+HH-GAP))	$((HW-GAP))	$((HH-HOS-GAP))		${windows[1]} # emacs
+wtp	$((HW+GAP))	$((OS+GAP))	$((HW-GAP-GAP))	$((H-OS-GAP-GAP))	${windows[2]} # xterm
