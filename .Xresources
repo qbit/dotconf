@@ -1,0 +1,51 @@
+! pkg_add xcursor-plan9
+Xcursor.theme:	plan9
+Xcursor.size:	22
+
+! ------------------------------------------------------------------------------
+! ROFI OpenBSD theme
+! ------------------------------------------------------------------------------
+rofi.color-enabled: true
+rofi.color-window: #798a99, #99aab9, #99aab9
+rofi.color-normal: #99aab9, #eeeeff, #99aab9, #798a99, #eeeeff
+rofi.color-active: #798a99, #fffa06, #99aab9, #99aab9, #fffa06
+rofi.color-urgent: #fdf6e3, #dc322f, #eee8d5, #dc322f, #fdf6e3
+
+ssh-askpass*font:			-adobe-helvetica-medium-r-normal--18-180-75-75-p-98-iso8859-1
+ssh-askpass*foreground:			#eeeeff
+ssh-askpass*background:			#798a99
+ssh-askpass.*.borderWidth:		1
+ssh-askpass.*.borderColor:		black
+ssh-askpass.*.shadowThickness:		0
+ssh-askpass.*Button.borderWidth:	0
+ssh-askpass.*Button.background:		#99aab9
+ssh-askpass.indicator.borderWidth:	0
+ssh-askpass.indicator.background:	#99aab9
+ssh-askpass.indicator.foreground:	#fffa06
+
+XLock.startCmd:		ssh-add -D
+XLock.dpmsoff:		15
+XLock.mode:		random
+XLock.mousemotion:	on
+XLock.program:		/usr/games/fortune -a
+XLock.random.modelist:	flag
+
+XIdle.timeout:		300
+
+XTerm*charClass:        33:48,37:48,42:48,45-47:48,58:48,63-64:48,126:48
+XTerm*cursorColor:	red
+XTerm*scrollBar: 	false
+XTerm*faceName:		Go Mono:pixelsize=12:antialias=true:autohint=false
+XTerm*cursorBlink:	true
+XTerm*loginShell:	true
+XTerm*dynamicColors:	true
+XTerm*background:	rgb:ff/ff/ea
+XTerm*foreground:	rgb:00/00/00
+XTerm*pointerShape:	left_ptr
+XTerm*pointerColor:	black
+
+Xft.dpi:		100
+Xft.antialias:		true
+Xft.rgba:		rgb
+Xft.hinting:		true
+Xft.hintstyle:		hintslight
