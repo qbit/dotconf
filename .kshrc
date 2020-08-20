@@ -1,3 +1,5 @@
+GOT_AUTHOR="Aaron Bieber <aaron@bolddaemon.com>"
+
 OHMYKSH_DIR=/home/qbit/src/ohmyksh
 . ${OHMYKSH_DIR}/ohmy.ksh
 
@@ -19,12 +21,14 @@ load_completion vmd
 load_completion rc
 #load_completion gopass
 load_completion git
+load_completion got
+load_completion mpc
 
-alias cdw='cd $(make show=WRKSRC)'
 alias dotconf='/usr/local/bin/git --git-dir=$HOME/.dotconf --work-tree=$HOME'
 alias mutt='stty discard undef; neomutt'
 alias tmux="tmux -u2"
 alias vi=vim
+alias got='env EDITOR=vim got'
 
 # the q prompt auto-loads the git-prompt extension
 set_prompt q
