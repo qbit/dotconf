@@ -15,6 +15,7 @@ load_extension fonts
 load_extension k
 load_extension nocolor
 load_extension openbsd
+load_extension pkgup
 
 load_completion ssh
 load_completion vmd
