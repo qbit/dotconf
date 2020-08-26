@@ -1,8 +1,8 @@
 #!/bin/sh
 
-# Make ~/.cache a temp dir
-TMP_CACHE=$(mktemp -d /tmp/cache.XXXXXXXXXX)
-ln -sf $TMP_CACHE ~/.cache
+# Make ~/Downloads a temp dir
+DL_CACHE=$(mktemp -d /tmp/downloads.XXXXXXXXXX)
+ln -sf $DL_CACHE ~/Downloads
 
 # Disable coredumps
 ulimit -Sc 0
