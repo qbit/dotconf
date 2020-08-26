@@ -36,12 +36,6 @@ if [ -x ${LPREFIX}/bin/dbus-launch -a -z "${DBUS_SESSION_BUS_ADDRESS}" ]; then
         eval `dbus-launch --sh-syntax --exit-with-session`
 fi
 
-get_font() {
-	grep "$1" ~/.Xdefaults | awk -F: '{sub(/^ +/, "", $2); print $2 ":" $3}'
-}
-
-echo "FONT NAME: $(get_font '^XTerm*face')"
-
 case "$wmanager" in
 	/usr/X11R6/bin/cwm)
 		xsetroot -solid black
