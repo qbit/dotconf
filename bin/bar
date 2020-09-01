@@ -111,32 +111,36 @@ battery() {
 		pct=${pct%%.*}
 		set -A batt_info $pct 0 0
 	else
-		set -A batt_info $(apm -alm)
+		set -A batt_info $(apm -almb)
 	fi
 
-	BATT=$((${batt_info[0]}/10))
-	BAR="#"
-	if [ "${batt_info[2]}" == "1" ] ; then
-		BAR="+"
-	fi
-
-	BATT_LINE=""
-	for i in $(jot 10); do
-		if [ "$i" -le "$BATT" ]; then
-			BATT_LINE="${BATT_LINE}${BAR}"
-		else
-			BATT_LINE="${BATT_LINE}-"
+	if [ "${batt_info[0]}" != "4" ]; then
+		BATT=$((${batt_info[1]}/10))
+		BAR="#"
+		if [ "${batt_info[3]}" == "1" ] ; then
+			BAR="+"
 		fi
-	done
 
-	if [ $BATT -lt 3 ] && [ "${batt_info[2]}" == "0" ]; then
-		BATT_LINE="${red}${BATT_LINE}${black}"
-	fi
+		BATT_LINE=""
+		for i in $(jot 10); do
+			if [ "$i" -le "$BATT" ]; then
+				BATT_LINE="${BATT_LINE}${BAR}"
+			else
+				BATT_LINE="${BATT_LINE}-"
+			fi
+		done
 
-	if [ $BATT -lt 5 ] && [ "${batt_info[2]}" == "0" ]; then
-		BATT_LINE="${yellow}${BATT_LINE}${black}"
+		if [ $BATT -lt 3 ] && [ "${batt_info[3]}" == "0" ]; then
+			BATT_LINE="${red}${BATT_LINE}${black}"
+		fi
+
+		if [ $BATT -lt 5 ] && [ "${batt_info[3]}" == "0" ]; then
+			BATT_LINE="${yellow}${BATT_LINE}${black}"
+		fi
+		echo "${batt_info[1]}%" "$BATT_LINE"
+	else
+		echo "AC"
 	fi
-	echo "${batt_info[0]}%" "$BATT_LINE"
 }
 
 mail() {
