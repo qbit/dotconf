@@ -12,18 +12,19 @@ set -A my_paths -- \
 paths "${my_paths[@]}"
 
 load_extension fonts
+load_extension fzf
 load_extension k
 load_extension nocolor
 load_extension openbsd
 load_extension pkgup
 
 load_completion ssh
-load_completion vmd
+pgrep -q vmd && load_completion vmd
 load_completion rc
-#load_completion gopass
+[ -d ~/.password-store ] && load_completion gopass
 load_completion git
 load_completion got
-load_completion mpc
+pgrep -q mpd && load_completion mpc
 
 alias dotconf='/usr/local/bin/git --git-dir=$HOME/.dotconf --work-tree=$HOME'
 alias mutt='stty discard undef; neomutt'
@@ -33,3 +34,5 @@ alias got='env EDITOR=vim got'
 
 # the q prompt auto-loads the git-prompt extension
 set_prompt q
+
+[ -x ~/.po ] && . ~/.po
