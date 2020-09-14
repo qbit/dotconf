@@ -2,7 +2,7 @@
 
 # Make ~/Downloads a temp dir
 DL_CACHE=$(mktemp -d /tmp/downloads.XXXXXXXXXX)
-ln -sf $DL_CACHE ~/Downloads
+ln -sf $DL_CACHE ${HOME}/Downloads
 
 # Disable coredumps
 ulimit -Sc 0
@@ -11,7 +11,8 @@ cat /dev/null > ~/.xsession-errors
 
 LC_CTYPE="en_US.UTF-8"
 TERM=screen-256color
-export LC_CTYPE TERM
+BROWSER=$(which xdg-open 2>/dev/null)
+export LC_CTYPE TERM BROWSER
 
 OS=$(uname)
 LPREFIX=/usr/local
