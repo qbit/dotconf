@@ -1,4 +1,4 @@
-GOT_AUTHOR="Aaron Bieber <aaron@bolddaemon.com>"
+export GOT_AUTHOR="Aaron Bieber <aaron@bolddaemon.com>"
 
 OHMYKSH_DIR=/home/qbit/src/ohmyksh
 . ${OHMYKSH_DIR}/ohmy.ksh
