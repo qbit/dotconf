@@ -17,7 +17,8 @@ color menufg		"#eeeeff"
 color urgencyborder	"red"
 
 command "Browser"	"~/bin/browser"
-command	"Terminal"	"/usr/X11R6/bin/xterm"
+command	"XTerm"		"/usr/X11R6/bin/xterm"
+command term		"/bin/ksh -l -c /usr/local/bin/st -c st"
 command	"Emacs"		"/usr/local/bin/emacs"
 
 # make emacs usable again
@@ -49,7 +50,7 @@ unbind-key	C-slash
 autogroup 1	"chromium-browser,Chromium-browser"
 autogroup 1	"Navigator,Firefox"
 autogroup 1	"Xephyr"
-autogroup 2	"xterm,XTerm"
+autogroup 2	"xterm,XTerm,st"
 autogroup 3	"emacs,Emacs"
 autogroup 4	"drawterm,DrawTerm"
 autogroup 5	"jetbrains-goland,jetbrains-goland"
