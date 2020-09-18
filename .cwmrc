@@ -19,6 +19,7 @@ color urgencyborder	"red"
 command "Browser"	"~/bin/browser"
 command	"XTerm"		"/usr/X11R6/bin/xterm"
 command term		"/bin/ksh -l -c /usr/local/bin/st -c st"
+command "st"		"/bin/ksh -l -c /usr/local/bin/st -c st"
 command	"Emacs"		"/usr/local/bin/emacs"
 
 # make emacs usable again
