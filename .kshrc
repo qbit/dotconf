@@ -1,6 +1,9 @@
-export GOT_AUTHOR="Aaron Bieber <aaron@bolddaemon.com>"
-
+GOT_AUTHOR="Aaron Bieber <aaron@bolddaemon.com>"
+BROWSER=$(which xdg-open 2>/dev/null)
 OHMYKSH_DIR=/home/qbit/src/ohmyksh
+
+export GOT_AUTHOR BROWSER OHMYKSH_DIR
+
 . ${OHMYKSH_DIR}/ohmy.ksh
 
 set -A my_paths -- \
