@@ -109,7 +109,7 @@ battery() {
 	if sysctl -n hw.product | grep -iq pine64; then
 		pct=$(sysctl -n hw.sensors.cwfg0.percent0)
 		pct=${pct%%.*}
-		set -A batt_info $pct 0 0
+		set -A batt_info 0 $pct 0 0
 	else
 		set -A batt_info $(apm -almb)
 	fi
