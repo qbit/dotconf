@@ -1,7 +1,8 @@
 #!/bin/sh
 
 # Make ~/Downloads a temp dir
-DL_CACHE=$(mktemp -d /tmp/downloads.XXXXXXXXXX)
+DL_CACHE="/tmp/${USER}_downloads"
+mkdir $DL_CACHE
 ln -sf $DL_CACHE ${HOME}/Downloads
 
 # Disable coredumps
