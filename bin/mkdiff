@@ -1,0 +1,21 @@
+#!/bin/sh
+
+name=$(make show=PKGNAME)
+fname="${HOME}/patches/${name}.diff"
+
+if [ -d CVS ]; then
+	cvs diff . > "$fname"
+else
+	if got status >/dev/null; then
+		got diff . > "$fname"
+	else
+		git diff . > "$fname"
+	fi
+fi
+echo "Created: $fname"
+echo "Syncing..."
+openrsync -a --rsync-path=/usr/bin/openrsync \
+	${HOME}/patches/ suah.dev:/var/www/deftly/patches/
+URL="https://deftly.net/patches/${name}.diff"
+echo -n "${URL}" | xclip
+echo "Copied '${URL}' to clipboard.."
