@@ -1,6 +1,10 @@
-#export PLAN9=~/src/plan9port
-#export PATH=$PATH:$HOME/go/bin:$PLAN9/bin
-export PATH=$PATH:$HOME/go/bin
+PLAN9=/usr/local/plan9/
+if [ -d ~/src/plan9port ]; then
+	PLAN9=~/src/plan9port
+fi
+export PLAN9
+
+export PATH=$PATH:$PLAN9/bin:$HOME/go/bin
 
 # That sweet sweet ^W
 WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
