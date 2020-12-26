@@ -1,0 +1,27 @@
+#!/bin/sh
+
+rage_dir=~/.rage
+rage_id_file="$(awk -F= '/^identity/{print $NF}' ${rage_dir}/config)"
+rage_id_recip="$(awk -F= '/^identity/{print $NF ".pub"}' ${rage_dir}/config)"
+
+cmd=$1
+
+list() {
+	find $rage_dir -type f -name \*.age
+}
+
+if [ -z ${cmd} ]; then
+	list
+	exit
+fi
+
+case $cmd in
+	ls)
+		list
+		;;
+	de)
+		age -i $rage_id_file -d $2
+		;;
+	default)
+		list
+esac
