@@ -4,7 +4,15 @@ if [ -d ~/src/plan9port ]; then
 fi
 export PLAN9
 
-export PATH=$PATH:$PLAN9/bin:$HOME/go/bin
+PATH=$PATH:$PLAN/bin
+
+if [ -d ~/opt/GNAT/2020/bin ]; then
+	PATH=$PATH:~/opt/GNAT/2020/bin
+fi
+
+PATH=$PATH:$HOME/go/bin:$HOME/bin
+
+export PATH
 
 # That sweet sweet ^W
 WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
