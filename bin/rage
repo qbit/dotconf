@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 rage_dir=~/.rage
 rage_id_file="$(awk -F= '/^identity/{print $NF}' ${rage_dir}/config)"
 rage_id_recip="$(awk -F= '/^identity/{print $NF ".pub"}' ${rage_dir}/config)"
