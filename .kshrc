@@ -1,6 +1,6 @@
 GOT_AUTHOR="Aaron Bieber <aaron@bolddaemon.com>"
 BROWSER=$(which xdg-open 2>/dev/null)
-OHMYKSH_DIR=/home/qbit/src/ohmyksh
+OHMYKSH_DIR=${HOME}/src/ohmyksh
 
 export GOT_AUTHOR BROWSER OHMYKSH_DIR
 
