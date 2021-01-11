@@ -19,12 +19,13 @@ set -A windows
 
 for i in $(lswin); do
 	n=$(wname $i)
+	echo "name: $n"
 	case $n in
 		emacs*)
 			echo "[X] emacs $i"
 			windows[1]=$i
 			;;
-		Main*)
+		Main*|st)
 			echo "[X] ksh $i"
 			windows[2]=$i
 			;;
