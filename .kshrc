@@ -42,4 +42,6 @@ alias got='env EDITOR=vim got'
 # the q prompt auto-loads the git-prompt extension
 set_prompt q
 
-[ -x ~/.po ] && . ~/.po
+if [ -x ~/.po ]; then
+	. ~/.po
+fi
