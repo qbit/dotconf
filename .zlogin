@@ -4,13 +4,14 @@ if [ -d ~/src/plan9port ]; then
 fi
 export PLAN9
 
-PATH=$PATH:$PLAN/bin
-
 if [ -d ~/opt/GNAT/2020/bin ]; then
-	PATH=$PATH:~/opt/GNAT/2020/bin
+	GNAT=~/opt/GNAT/2020
 fi
+export GNAT
 
-PATH=$PATH:$HOME/go/bin:$HOME/bin
+for p in "${HOME}/opt/bin" "${HOME}/opt/sbin" "${GNAT}/bin" "${PLAN9}/bin" "${HOME}/go/bin" "${HOME}/bin"; do
+	PATH="${PATH}:$p"
+done
 
 export PATH
 
