@@ -1,6 +1,6 @@
 ! pkg_add xcursor-plan9
-Xcursor.theme:	plan9
-Xcursor.size:	22
+!Xcursor.theme:	plan9
+!Xcursor.size:	22
 
 ! ------------------------------------------------------------------------------
 ! ROFI OpenBSD theme
