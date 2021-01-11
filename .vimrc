@@ -1,15 +1,10 @@
 call plug#begin('~/.vim/plugged')
 
-"Plug 'andreypopp/vim-colors-plain'
-"Plug 'arcticicestudio/nord-vim'
-"Plug 'chriskempson/base16-vim'
-"Plug 'https://bitbucket.org/kisom/eink.vim.git'
 Plug 'LnL7/vim-nix'
 Plug 'airblade/vim-gitgutter'
 Plug 'fatih/vim-go'
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
-Plug 'ngmy/vim-rubocop'
 Plug 'w0rp/ale'
 
 call plug#end()
@@ -36,9 +31,6 @@ nmap <C-p> :Files<cr>
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 set encoding=utf8
 set t_Co=256
-"set background=dark " Or 'light'
-"set background=light
-"colorscheme eink
 syntax off
 
 set nocp
@@ -57,7 +49,6 @@ match OverLength /\%79v.\+/
 set dir=~/.swaps
 set nolist
 set ruler
-"set lazyredraw
 set mouse-=a
 
 let g:ale_linters = {
