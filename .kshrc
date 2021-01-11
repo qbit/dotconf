@@ -19,6 +19,7 @@ load_extension fzf
 load_extension k
 load_extension nocolor
 load_extension openbsd
+load_extension keychain
 load_extension pkgup
 
 load_completion ssh
