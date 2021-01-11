@@ -4,7 +4,19 @@ DEVCLASS=$1
 DEVNAME=$2
 
 case "$DEVNAME" in
+	urndis0)
+		sh /etc/netstart urndis0
+	;;
 	fido0)
 		pkill -USR1 -xf "/usr/bin/perl /usr/local/bin/fido"
 	;;
+	uhidev[0-9])
+		if dmesg | grep -q "Keyboardio Atreus"; then
+			# get the most recently connected keyboard
+			lk=$(wsconsctl | egrep "^keyboard[0-9].encoding" | tail -n 1 | awk -F. '{print $1}')
+			wsconsctl ${lk}.encoding=us
+			echo "Setting $lk to: $(wsconsctl ${lk}.encoding)"
+		fi
+	;;
+
 esac
