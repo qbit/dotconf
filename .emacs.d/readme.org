@@ -221,7 +221,7 @@ Magit is a awesome. Not sure what else to say about it. :P
   to add this to get it back:
 
 #+begin_src emacs-lisp
-(define-key flycheck-mode-map (kbd "C-c ! !") 'org-time-stamp-inactive)
+(define-key flycheck-mode-map (kbd "C-c !") 'org-time-stamp-inactive)
 #+end_src
 
 ** Go configuration
@@ -629,6 +629,7 @@ I publish some of my notes [[https://suah.dev/p][on suah.dev/p]]. Also some reci
 #+end_src
 
 ** org
+
 #+begin_src emacs-lisp
   (use-package org
     ;;:pin "org"
