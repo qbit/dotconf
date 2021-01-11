@@ -30,6 +30,9 @@ load_completion git
 load_completion got
 pgrep -q mpd && load_completion mpc
 
+#[[ -s ~/.ssh/host_config ]] && read_ssh_config ~/.ssh/host_config
+#set -A complete_ssh -- ${HOST_LIST[*]}
+
 alias dotconf='/usr/local/bin/git --git-dir=$HOME/.dotconf --work-tree=$HOME'
 alias mutt='stty discard undef; neomutt'
 alias tmux="tmux -u2"
