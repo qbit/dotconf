@@ -651,6 +651,7 @@ I publish some of my notes [[https://suah.dev/p][on suah.dev/p]]. Also some reci
           org-agenda-files (find-lisp-find-files "~/org" "\.org$")
           org-startup-indented t
           org-log-done 'time
+          org-log-into-drawer t
           org-src-tab-acts-natively t
           org-agenda-skip-scheduled-if-deadline-is-shown t
           org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)")
