@@ -21,6 +21,18 @@ case $cmd in
 	ls)
 		list
 		;;
+	en)
+		printf 'Password: '
+		stty -echo
+		read pass
+		stty echo
+		echo ""
+		printf 'Location: '
+		read loc
+		echo ""
+		mkdir -p "$(dirname ~/.rage/${loc})"
+		echo "$pass" | age -r "$(cat ${rage_id_file}.pub)" > ~/.rage/${loc}.age
+		;;
 	de)
 		age -i $rage_id_file -d $2
 		;;
