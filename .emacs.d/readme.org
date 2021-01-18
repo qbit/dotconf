@@ -12,12 +12,25 @@ or similar it doesn't have the same ENV as it does when launching from the
 shell.
 
 #+begin_src emacs-lisp
-(setenv "PATH" (concat (getenv "PATH") ":/usr/local/jdk-11/bin:~/go/bin:~/ruby_bin/bin"))
-(setenv "GEM_HOME" (expand-file-name "~/ruby_bin"))
-(setenv "GEM_BIN" (expand-file-name "~/ruby_bin/bin"))
-(setenv "BUNDLE_PATH" (expand-file-name "~/ruby_bin"))
-(setenv "JAVA_HOME" "/usr/local/jdk-11/")
-(setq exec-path (append exec-path '("~/go/bin:~/ruby_bin/bin")))
+  (defun expand-if-exists (d)
+    ;; expand-if-exists(d) expands d only if d exists
+    (if (file-exists-p d)
+        (expand-file-name d)))
+
+  (let ((paths
+         '(
+           "/usr/local/bin"
+           "/usr/ports/infrastructure/bin"
+           "~/bin"
+           "~/go/bin"
+           "~/opt/bin"
+           "/usr/local/plan9/bin"
+           )
+         )
+        )
+
+    (setenv "PATH" (concat (getenv "PATH") (mapconcat 'expand-if-exists (remove nil paths) ":")))
+    (setq exec-path (remove "" (split-string (getenv "PATH") ":"))))
 #+end_src
 
 ** Start the emacs server
