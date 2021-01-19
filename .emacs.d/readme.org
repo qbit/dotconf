@@ -20,6 +20,7 @@ shell.
   (let ((paths
          '(
            "/usr/local/bin"
+           "/usr/local/jdk-11/bin"
            "/usr/ports/infrastructure/bin"
            "~/bin"
            "~/go/bin"
