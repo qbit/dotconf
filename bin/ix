@@ -2,12 +2,15 @@
 
 use strict;
 use warnings;
-use OpenBSD::Pledge;
-use OpenBSD::Unveil;
-use HTTP::Tiny;
 
-unveil("/", "") or die;
-pledge(qw( stdio dns inet rpath )) or die;
+use HTTP::Tiny;
+if ($^O eq "openbsd") {
+	require OpenBSD::Pledge;
+	require OpenBSD::Unveil;
+
+	unveil("/", "") or die;
+	pledge(qw( stdio dns inet rpath )) or die;
+}
 
 my $http = HTTP::Tiny->new();
 
