@@ -34,7 +34,12 @@ case $cmd in
 		echo "$pass" | age -r "$(cat ${rage_id_file}.pub)" > ~/.rage/${loc}.age
 		;;
 	de)
-		age -i $rage_id_file -d $2
+		if [ -f $2 ]; then
+			age -i $rage_id_file -d $2
+		else
+			F=$(list | grep $2)
+			age -i $rage_id_file -d "${F}"
+		fi
 		;;
 	default)
 		list
