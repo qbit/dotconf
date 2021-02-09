@@ -23,7 +23,7 @@ ssh-askpass.indicator.borderWidth:	0
 ssh-askpass.indicator.background:	#99aab9
 ssh-askpass.indicator.foreground:	#fffa06
 
-XLock.startCmd:		ssh-add -D
+XLock.startCmd:		ssh-add -D; /usr/local/bin/rbw lock; /usr/local/bin/sudo -K
 XLock.dpmsoff:		15
 XLock.mode:		random
 XLock.mousemotion:	on
