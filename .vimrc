@@ -7,6 +7,12 @@ Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'w0rp/ale'
 
+Plug 'leafgarland/typescript-vim'
+Plug 'vim-ruby/vim-ruby'
+
+Plug 'prabirshrestha/async.vim'
+Plug 'prabirshrestha/vim-lsp'
+
 call plug#end()
 
 nmap <Leader>bi :PlugInstall<CR>
@@ -50,6 +56,13 @@ set dir=~/.swaps
 set nolist
 set ruler
 set mouse-=a
+
+
+au User lsp_setup call lsp#register_server({
+	\ 'name': 'rust-analyzer',
+	\ 'cmd': ["rust-analyzer"],
+	\ 'allowlist': ['rust'],
+\ })
 
 let g:ale_linters = {
 \   'javascript': ['eslint'],
