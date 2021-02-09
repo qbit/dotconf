@@ -1,6 +1,7 @@
 #!/bin/sh
 
 # Make ~/Downloads a temp dir
+rm -rf ~/Downloads
 DL_CACHE="/tmp/${USER}_downloads"
 mkdir $DL_CACHE
 ln -sf $DL_CACHE ${HOME}/Downloads
