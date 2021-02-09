@@ -36,8 +36,8 @@ pgrep -q mpd && load_completion mpc
 alias dotconf='/usr/local/bin/git --git-dir=$HOME/.dotconf --work-tree=$HOME'
 alias mutt='stty discard undef; neomutt'
 alias tmux="tmux -u2"
-alias vi=vim
-alias got='env EDITOR=vim got'
+alias vi=nvim
+alias got='env EDITOR=nvim got'
 
 # the q prompt auto-loads the git-prompt extension
 set_prompt q
