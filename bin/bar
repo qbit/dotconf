@@ -104,6 +104,24 @@ temp() {
 		printf "%2d°C" "${TMP}"
 	fi
 }
+
+now_playing() {
+	local NP
+	NP="-"
+
+	# MPD
+	if pgrep -q mpd; then
+		NP="$(mpc -f '%name% - %title%' | head -n1)"
+	fi
+
+	# Pianobar
+	if pgrep -q pianobar; then
+		NP="pianobar"
+	fi
+
+	printf "%s" "${NP}"
+}
+
 battery() {
 	local BATT BAR BATT_LINE
 	if sysctl -n hw.product | grep -iq pine64; then
@@ -171,6 +189,6 @@ vmm() {
 	fi
 }
 
-printf "%%{l} %s | %s | %%{A:apm -A:}%%{A2:apm -L:}%%{A3:apm -H:}%s%%{A}%%{A}%%{A} | %s %%{r} %s | %s | %s | %s | @%s " \
+printf "%%{l} %s | %s | %%{A:apm -A:}%%{A2:apm -L:}%%{A3:apm -H:}%s%%{A}%%{A}%%{A} | %s %%{r} | %s | %s | %s | %s | %s | @%s " \
 	"$(battery)" "$(temp)" "$(hz)" "$(mem)" \
-	"$(vmm)" "$(mail)" "$(wifi)" "$(date '+%Y-%m-%d %H:%M')" "$(beat)"
+	"$(now_playing)" "$(vmm)" "$(mail)" "$(wifi)" "$(date '+%Y-%m-%d %H:%M')" "$(beat)"
