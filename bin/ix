@@ -8,8 +8,8 @@ if ($^O eq "openbsd") {
 	require OpenBSD::Pledge;
 	require OpenBSD::Unveil;
 
-	unveil("/", "") or die;
-	pledge(qw( stdio dns inet rpath )) or die;
+	OpenBSD::Unveil::unveil("/", "") or die;
+	OpenBSD::Pledge::pledge(qw( stdio dns inet rpath )) or die;
 }
 
 my $http = HTTP::Tiny->new();
