@@ -239,7 +239,6 @@ Magit is a awesome. Not sure what else to say about it. :P
 #+end_src
 
 ** Go configuration
-
 *** go-add-tags
 
 This lets one select a ~struct~ or similar and auto add the ~`json:"NAME"`~ bits.
@@ -293,10 +292,10 @@ Some go tools use this.
 care about Go and Ruby.
 
 #+begin_src emacs-lisp
-(use-package lsp-mode
-  :hook ((go-mode    . lsp-deferred)
-	 (ruby-mode  . lsp))
-  :commands (lsp lsp-deferred))
+  (use-package lsp-mode
+    :hook ((go-mode    . lsp-deferred)
+           (ruby-mode  . lsp))
+    :commands (lsp lsp-deferred))
 #+end_src
 
 ** company and friends
@@ -342,12 +341,10 @@ I don't often use the shell from emacs, but when I do these bits make it
 easier for me to treat it like a regular shell.
 
 #+begin_src emacs-lisp
-(use-package fish-mode)
-
-;; Kill terminal buffers on exit so I din't have to kill the buffer after I exit.
-(defadvice term-handle-exit
-    (after term-kill-buffer-on-exit activate)
-  (kill-buffer))
+  ;; Kill terminal buffers on exit so I din't have to kill the buffer after I exit.
+  (defadvice term-handle-exit
+      (after term-kill-buffer-on-exit activate)
+    (kill-buffer))
 #+end_src
 
 ** pinboard

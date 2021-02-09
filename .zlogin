@@ -62,5 +62,6 @@ alias mkae='make'
 alias pass="gopass"
 alias rustc='rustc --color=never'
 alias sbcl="rlwrap sbcl"
+alias yaegi="rlwrap yaegi"
 alias tmux="tmux -2"
 alias dotconf="$(which git) --git-dir=$HOME/.dotconf --work-tree=$HOME"
