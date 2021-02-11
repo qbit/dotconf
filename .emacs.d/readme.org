@@ -595,7 +595,7 @@ I publish some of my notes [[https://suah.dev/p][on suah.dev/p]]. Also some reci
            :style-include-default nil
            :sitemap-title "Deftly.net"
            :with-title t
-           :author-info nil
+           :author-info t
            :creator-info nil
            :base-directory "~/org/deftly")
           ("notes-static"
