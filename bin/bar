@@ -111,7 +111,7 @@ now_playing() {
 
 	# MPD
 	if pgrep -q mpd; then
-		NP="$(mpc -f '%name% - %title%' | head -n1)"
+		NP="$(mpc -f '%name%%artist% - %title%' | head -n1)"
 	fi
 
 	# Pianobar
