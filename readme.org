@@ -8,8 +8,13 @@ The idea for managing dot files in this way came from [[https://news.ycombinator
 
 #+begin_src shell
 git clone --separate-git-dir=~/.dotconf git@git.sr.ht:~qbit/dotconf /tmp/dotconf
+# or 
+git clone --separate-git-dir=~/.dotconf https://github.com/qbit/dotconf /tmp/dotconf
+
 rm -rf /tmp/dotconf
+
 alias dotconf='/usr/local/bin/git --git-dir=$HOME/.dotconf --work-tree=$HOME'
+
 dotconf config status.showUntrackedFiles no
 dotconf checkout .
 #+end_src
