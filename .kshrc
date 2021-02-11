@@ -42,6 +42,10 @@ alias got='env EDITOR=nvim got'
 # the q prompt auto-loads the git-prompt extension
 set_prompt q
 
+if [ -x ~/.ksh_local ]; then
+	. ~/.ksh_local
+fi
+
 if [ -x ~/.po ]; then
 	. ~/.po
 fi
