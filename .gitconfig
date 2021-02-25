@@ -52,3 +52,5 @@
 [include]
 	path = ~/work/git/gitconfig
 
+[init]
+	defaultBranch = main
