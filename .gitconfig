@@ -6,7 +6,7 @@
 	log = log --color=never
 
 [push]
-	default = simple
+	default = current
 [color]
 	branch = false
 	diff = true
