@@ -3,7 +3,7 @@ unignore from: subject to cc date x-mailer x-url user-agent
 
 source ~/.mutt.creds
 
-set editor = "vim"
+set editor = "nvim"
 
 set certificate_file = ~/.mutt/certificates
 
