@@ -450,7 +450,10 @@ plantuml is a pretty easy way to make decent looking flow chart sorta things.
     (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
     (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))))
 #+end_src
-
+** Elpher
+#+begin_src emacs-lisp
+  (use-package elpher)
+#+end_src
 * Mail
 
 ~mu~ has been the best mail client for me on emacs.
@@ -458,16 +461,16 @@ plantuml is a pretty easy way to make decent looking flow chart sorta things.
 ** General mail configuration
 
 #+begin_src emacs-lisp
-(require 'smtpmail)
-(setq user-mail-address              "aaron@bolddaemon.com"
-      user-full-name                 "Aaron Bieber"
-      message-send-mail-function     'smtpmail-send-it
-      message-kill-buffer-on-exit    t
-      smtpmail-smtp-user             "qbit@fastmail.com"
-      smtpmail-smtp-server           "smtp.fastmail.com"
-      smtpmail-smtp-service          465
-      smtpmail-default-smtp-server   "smtp.fastmail.com"
-      smtpmail-stream-type           'ssl)
+  (require 'smtpmail)
+  (setq user-mail-address              "aaron@bolddaemon.com"
+        user-full-name                 "Aaron Bieber"
+        message-send-mail-function     'smtpmail-send-it
+        message-kill-buffer-on-exit    t
+        smtpmail-smtp-user             "qbit@fastmail.com"
+        smtpmail-smtp-server           "smtp.fastmail.com"
+        smtpmail-smtp-service          465
+        smtpmail-default-smtp-server   "smtp.fastmail.com"
+        smtpmail-stream-type           'ssl)
 #+end_src
 
 ** mu4e specific configs
