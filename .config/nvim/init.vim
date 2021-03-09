@@ -6,6 +6,7 @@ Plug 'fatih/vim-go'
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'w0rp/ale'
+Plug 'ziglang/zig.vim'
 
 Plug 'leafgarland/typescript-vim'
 Plug 'vim-ruby/vim-ruby'
