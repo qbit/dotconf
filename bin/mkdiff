@@ -17,5 +17,9 @@ echo "Syncing..."
 openrsync -a --rsync-path=/usr/bin/openrsync \
 	${HOME}/patches/ suah.dev:/var/www/deftly/patches/
 URL="https://deftly.net/patches/${name}.diff"
-echo -n "${URL}" | xclip
-echo "Copied '${URL}' to clipboard.."
+echo ${URL}
+
+if [ ! -z $DISPLAY ]; then
+	echo -n "${URL}" | xclip
+	echo "Copied '${URL}' to clipboard.."
+fi
