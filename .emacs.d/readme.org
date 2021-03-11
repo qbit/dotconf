@@ -238,6 +238,10 @@ Magit is a awesome. Not sure what else to say about it. :P
 (define-key flycheck-mode-map (kbd "C-c !") 'org-time-stamp-inactive)
 #+end_src
 
+** Zig configuration
+#+begin_src emacs-lisp
+  (use-package zig-mode)
+#+end_src
 ** Go configuration
 *** go-add-tags
 
