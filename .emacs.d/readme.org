@@ -379,79 +379,31 @@ A pinboard.in client
   :mode (("\\.http$" . restclient-mode)))
 #+end_src
 
-** treemacs
-
-This gives me a decent "sidebar" that is project oriented - the workspaces
-are handy too.
-
-- ~C-s C-w s~ to switch workspaces.
-- ~C-s C-w e~ to edit workspaces.
+* Sidebar
+** dired-sidebar
 
 #+begin_src emacs-lisp
-(use-package treemacs
-  :config
-  (progn
-    (setq treemacs-collapse-dirs                 (if treemacs-python-executable 3 0)
-	  treemacs-deferred-git-apply-delay      0.5
-	  treemacs-directory-name-transformer    #'identity
-	  treemacs-display-in-side-window        t
-	  treemacs-eldoc-display                 t
-	  treemacs-file-event-delay              5000
-	  treemacs-file-extension-regex          treemacs-last-period-regex-value
-	  treemacs-file-follow-delay             0.2
-	  treemacs-file-name-transformer         #'identity
-	  treemacs-follow-after-init             t
-	  treemacs-git-command-pipe              ""
-	  treemacs-goto-tag-strategy             'refetch-index
-	  treemacs-indentation                   2
-	  treemacs-indentation-string            " "
-	  treemacs-is-never-other-window         nil
-	  treemacs-max-git-entries               5000
-	  treemacs-missing-project-action        'ask
-	  treemacs-move-forward-on-expand        nil
-	  treemacs-no-png-images                 nil
-	  treemacs-no-delete-other-windows       t
-	  treemacs-project-follow-cleanup        nil
-	  treemacs-persist-file                  (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
-	  treemacs-position                      'left
-	  treemacs-recenter-distance             0.1
-	  treemacs-recenter-after-file-follow    nil
-	  treemacs-recenter-after-tag-follow     nil
-	  treemacs-recenter-after-project-jump   'always
-	  treemacs-recenter-after-project-expand 'on-distance
-	  treemacs-show-cursor                   nil
-	  treemacs-show-hidden-files             t
-	  treemacs-silent-filewatch              nil
-	  treemacs-silent-refresh                nil
-	  treemacs-sorting                       'alphabetic-asc
-	  treemacs-space-between-root-nodes      t
-	  treemacs-tag-follow-cleanup            t
-	  treemacs-tag-follow-delay              1.5
-	  treemacs-user-mode-line-format         nil
-	  treemacs-user-header-line-format       nil
-	  treemacs-width                         35)
+  (use-package all-the-icons)
+#+end_src
 
-    (treemacs-follow-mode t)
-    (treemacs-filewatch-mode t)
-    (treemacs-fringe-indicator-mode t)
-    (pcase (cons (not (null (executable-find "git")))
-		 (not (null treemacs-python-executable)))
-      (`(t . t)
-       (treemacs-git-mode 'deferred))
-      (`(t . _)
-       (treemacs-git-mode 'simple))))
-  :bind
-  (:map global-map
-	("M-0"       . treemacs-select-window)
-	("C-x t 1"   . treemacs-delete-other-windows)
-	("C-x t t"   . treemacs)
-	("C-x t B"   . treemacs-bookmark)
-	("C-x t C-t" . treemacs-find-file)
-	("C-x t M-t" . treemacs-find-tag)))
+#+begin_src emacs-lisp
+  (use-package dired-sidebar
+    :bind (("C-x C-n" . dired-sidebar-toggle-sidebar))
+    :ensure t
+    :commands (dired-sidebar-toggle-sidebar)
+    :init
+    (add-hook 'dired-sidebar-mode-hook
+              (lambda ()
+                (unless (file-remote-p default-directory)
+                  (auto-revert-mode))))
+    :config
+    (push 'toggle-window-split dired-sidebar-toggle-hidden-commands)
+    (push 'rotate-windows dired-sidebar-toggle-hidden-commands)
 
-(use-package treemacs-magit
-  :after treemacs magit
-  :ensure t)
+    (setq dired-sidebar-subtree-line-prefix "  "
+          dired-sidebar-theme 'all-the-icons
+          dired-sidebar-use-term-integration t
+          dired-sidebar-use-custom-font t))
 #+end_src
 
 ** plantuml
@@ -621,16 +573,15 @@ I publish some of my notes [[https://suah.dev/p][on suah.dev/p]]. Also some reci
           ("ohmy-web"
            :auto-preamble t
            :auto-sitemap nil
-           :headline-levels 1
+           :headline-levels 2
            :publishing-directory "/ssh:suah.dev:/var/www/deftly/ohmyksh/"
            :publishing-function org-html-publish-to-html
            :recursive t
            :section-numbers nil
-           :html-head "<link rel=\"stylesheet\" href=\"https://deftly.net/css/default.css\" type=\"text/css\" />"
+           :html-head "<link rel=\"stylesheet\" href=\"https://deftly.net/ohmyksh/css/stylesheet.css\" type=\"text/css\" />"
            :html-link-home "http://deftly.net/ohmyksh"
            :html-link-up "../"
            :style-include-default nil
-           :sitemap-title "ohmyksh"
            :with-title t
            :author-info t
            :creator-info nil
@@ -648,7 +599,7 @@ I publish some of my notes [[https://suah.dev/p][on suah.dev/p]]. Also some reci
            :recursive t
            :publishing-function org-publish-attachment)
           ("ohmy-static"
-           :base-directory "~/src/ohmyksh"
+           :base-directory "~/src/ohmyksh/.static"
            :publishing-directory "/ssh:suah.dev:/var/www/deftly/ohmyksh/"
            :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg"
            :recursive t
@@ -729,6 +680,7 @@ I publish some of my notes [[https://suah.dev/p][on suah.dev/p]]. Also some reci
           org-agenda-files (find-lisp-find-files "~/org" "\.org$")
           org-startup-indented t
           org-log-done 'time
+          org-export-with-sub-superscripts nil
           org-log-into-drawer t
           org-src-tab-acts-natively t
           org-agenda-skip-scheduled-if-deadline-is-shown t
