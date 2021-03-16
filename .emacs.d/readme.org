@@ -1,4 +1,8 @@
 #+TITLE: Emacs Configuration
+* TMP
+#+begin_src emacs-lisp
+  (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+#+end_src
 * Literate emacs configuration
 
 I can never rembember what various configs do. Jumping on this literate emacs
@@ -20,6 +24,8 @@ shell.
   (let ((paths
          '(
            "/usr/local/bin"
+           "/usr/local/go/bin"
+           "/usr/local/MacGPG2/bin"
            "/usr/local/jdk-11/bin"
            "/usr/ports/infrastructure/bin"
            "~/bin"
@@ -98,6 +104,12 @@ If we are on OpenBSD, fill the scratch buffer with fortune \o/.
 (scroll-bar-mode -1)
 (column-number-mode +1)
 (global-font-lock-mode 1)
+#+end_src
+
+**** No GNU ls here
+#+begin_src emacs-lisp
+  (setq ls-lisp-use-insert-directory-program nil)
+  (require 'ls-lisp)
 #+end_src
 
 *** Behavior
@@ -258,14 +270,14 @@ This lets one select a ~struct~ or similar and auto add the ~`json:"NAME"`~ bits
 This allows for things like ~gofmt~ and auto adding / removing of imports.
 
 #+begin_src emacs-lisp
-(use-package go-mode
-  :after (go-add-tags lsp-mode)
-  :bind
-  ("C-c t" . go-add-tags))
-(defun lsp-go-install-save-hooks ()
-  (add-hook 'before-save-hook #'lsp-format-buffer t t)
-  (add-hook 'before-save-hook #'lsp-organize-imports t t))
-(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+  (use-package go-mode
+    :after (go-add-tags lsp-mode)
+    :bind
+    ("C-c t" . go-add-tags))
+  (defun lsp-go-install-save-hooks ()
+    (add-hook 'before-save-hook #'lsp-format-buffer t t)
+    (add-hook 'before-save-hook #'lsp-organize-imports t t))
+  (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 #+end_src
 
 *** go-eldoc
