@@ -1,8 +1,4 @@
 #+TITLE: Emacs Configuration
-* TMP
-#+begin_src emacs-lisp
-  (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
-#+end_src
 * Literate emacs configuration
 
 I can never rembember what various configs do. Jumping on this literate emacs
@@ -327,9 +323,6 @@ things like Go.
 	company-idle-delay .3
 	company-echo-delay 0)
   :hook (prog-mode . company-mode))
-
-(use-package company-lsp
-  :commands company-lsp)
 #+end_src
 
 ** gitgutter
@@ -379,11 +372,14 @@ A pinboard.in client
   :mode (("\\.http$" . restclient-mode)))
 #+end_src
 
-* Sidebar
 ** dired-sidebar
+
+I tried using treemacs for a while, but the "project" orientation is a bit much
+for what I want. dired-sidebar uses dired, so things are minimalish and quick.
 
 #+begin_src emacs-lisp
   (use-package all-the-icons)
+  (use-package all-the-icons-dired)
 #+end_src
 
 #+begin_src emacs-lisp
@@ -399,6 +395,8 @@ A pinboard.in client
     :config
     (push 'toggle-window-split dired-sidebar-toggle-hidden-commands)
     (push 'rotate-windows dired-sidebar-toggle-hidden-commands)
+
+    (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
 
     (setq dired-sidebar-subtree-line-prefix "  "
           dired-sidebar-theme 'all-the-icons
