@@ -979,7 +979,10 @@ This advice can make `other-window' skip `sr-speedbar' window."
 
 *** Speedbar options
 #+begin_src emacs-lisp
-  (setq sr-speedbar-right-side nil)
+  (setq
+   speedbar-show-unknown-files t
+   sr-speedbar-right-side nil)
+
   (global-set-key (kbd "C-x C-n") 'sr-speedbar-toggle)
 #+end_src
 ** plantuml
