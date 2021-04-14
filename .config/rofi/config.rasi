@@ -1,0 +1,7 @@
+configuration {
+	modi: "run,bw:rofi-bw,mpc:rofi-mpc,vmctl:rofi-vmctl,window,ssh";
+	color-normal: "#99aab9, #eeeeff, #99aab9, #798a99, #eeeeff";
+	color-urgent: "#fdf6e3, #dc322f, #eee8d5, #dc322f, #fdf6e3";
+	color-active: "#798a99, #fffa06, #99aab9, #99aab9, #fffa06";
+	color-window: "#798a99, #99aab9, #99aab9";
+}

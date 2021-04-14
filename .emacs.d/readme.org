@@ -1085,10 +1085,11 @@ Some go tools use this.
       (progn
         (load "/usr/local/share/emacs/site-lisp/mu4e/mu4e.el")
         (require 'mu4e)
-
+        (require 'mu4e-speedbar)
         (require 'org-mu4e)
         (setq mail-user-agent 'mu4e-user-agent
               mu4e-get-mail-command "mbsync fastmail"
+              mu4e-mu-home (expand-file-name "~/.mu")
               ;;mu4e-update-interval 420
               mu4e-compose-context-policy nil
               mu4e-context-policy 'pick-first
@@ -1170,7 +1171,7 @@ I publish some of my notes [[https://suah.dev/p][on suah.dev/p]]. Also some reci
 
 #+begin_src emacs-lisp
   (setq my-org-publish-alist
-        '(("notes" :components ("org-notes" "notes-static"))
+        '(("notes" :components ("org-notes" "notes-static" "notes-rss"))
           ("deftly" :components ("deftly-blog" "deftly-static"))
           ("ohmyksh" :components ("ohmy-web" "ohmy-static"))
           ("org-notes"
@@ -1242,6 +1243,16 @@ I publish some of my notes [[https://suah.dev/p][on suah.dev/p]]. Also some reci
            :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg"
            :recursive t
            :publishing-function org-publish-attachment)
+          ("notes-rss"
+           :publishing-directory "/ssh:suah.dev:/var/www/htdocs/p/"
+           :publishing-function org-rss-publish-to-rss
+           :recursive t
+           :rss-extension "xml"
+           :section-numbers nil
+           :exclude ".*"
+           :include ("index.org")
+           :table-of-contents nil
+           :base-directory "~/org/notes")
           ("recipes"
            :auto-preamble t
            :auto-sitemap t
