@@ -1060,6 +1060,11 @@ Some go tools use this.
   (use-package zig-mode)
 #+end_src
 
+** Lua
+
+#+begin_src emacs-lisp
+  (use-package lua-mode)
+#+end_src
 * Mail
 
 ~mu~ has been the best mail client for me on emacs.
@@ -1127,7 +1132,11 @@ Some go tools use this.
                   :key ?d)
                 ,(make-mu4e-bookmark
                   :name  "Last 7 days"
-                  :query "date:7d..now AND NOT flag:trashed"
+                  :query (concat
+                          "date:6d..now"
+                          " AND NOT flag:trashed"
+                          " AND NOT list:ports-changes.openbsd.org"
+                          " AND NOT list:source-changes.openbsd.org")
                   :key ?w)
                 ,(make-mu4e-bookmark
                   :name  "Hackers"
