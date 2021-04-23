@@ -1,5 +1,9 @@
 #!/bin/sh
 
+mv ~/.cache ~/.tcache && \
+	mkdir ~/.cache
+rm -rf ~/.tcache &
+
 # Make ~/Downloads a temp dir
 rm -rf ~/Downloads
 DL_CACHE="/tmp/${USER}_downloads"
@@ -40,6 +44,9 @@ if [ -x ${LPREFIX}/bin/dbus-launch -a -z "${DBUS_SESSION_BUS_ADDRESS}" ]; then
 fi
 
 case "$wmanager" in
+	/home/qbit/bin/juicebox)
+		xsetroot -solid black
+		;;
 	/usr/X11R6/bin/cwm)
 		xsetroot -solid black
 		while true; do ~/bin/bar; sleep 3; done | lemonbar-xft -d \

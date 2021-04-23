@@ -38,6 +38,8 @@ alias mutt='stty discard undef; neomutt'
 alias tmux="tmux -u2"
 alias vi=nvim
 alias got='env EDITOR=nvim got'
+alias lookman='man -k'
+alias gomuks='env GOMUKS_CACHE_HOME=~/.gomuks gomuks'
 
 # the q prompt auto-loads the git-prompt extension
 set_prompt q

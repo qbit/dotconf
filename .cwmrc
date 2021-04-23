@@ -9,11 +9,11 @@ ignore panel
 fontname "Go Regular:pixelsize=13"
 
 borderwidth		2
-color activeborder	"#99aab9"
-color font		"#eeeeff"
-color inactiveborder	"#000000"
-color menubg		"#798a99"
-color menufg		"#eeeeff"
+color inactiveborder	"#99aab9"
+color font		"#000000"
+color activeborder	"#000000"
+color menubg		"#ffffea"
+color menufg		"#dedeff"
 color urgencyborder	"red"
 
 command "Browser"	"~/bin/browser"
