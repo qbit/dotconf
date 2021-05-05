@@ -41,6 +41,14 @@ case $cmd in
 			age -i $rage_id_file -d "${F}"
 		fi
 		;;
+	otp)
+		if [ -f $2 ]; then
+			age -i $rage_id_file -d $2 | oathtool -b --totp -
+		else
+			F=$(list | grep $2)
+			age -i $rage_id_file -d "${F}" | oathtool -b --totp -
+		fi
+		;;
 	default)
 		list
 esac
