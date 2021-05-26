@@ -2,6 +2,9 @@
 	email = aaron@bolddaemon.com
 	name = Aaron Bieber
 
+[branch]
+	sort = -committerdate
+
 [alias]
 	log = log --color=never
 
