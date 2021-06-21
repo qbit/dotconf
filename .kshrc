@@ -1,8 +1,9 @@
 GOT_AUTHOR="Aaron Bieber <aaron@bolddaemon.com>"
 BROWSER=$(which xdg-open 2>/dev/null)
 OHMYKSH_DIR=${HOME}/src/ohmyksh
+OHMYPATCHES=~/patches
 
-export GOT_AUTHOR BROWSER OHMYKSH_DIR
+export GOT_AUTHOR BROWSER OHMYKSH_DIR OHMYPATCHES
 
 . ${OHMYKSH_DIR}/ohmy.ksh
 
