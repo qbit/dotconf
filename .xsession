@@ -47,7 +47,7 @@ case "$wmanager" in
 	/home/qbit/bin/juicebox)
 		xsetroot -solid black
 		;;
-	/usr/X11R6/bin/cwm)
+	/usr/X11R6/bin/cwm|/usr/local/bin/spectrwm)
 		xsetroot -solid black
 		while true; do ~/bin/bar; sleep 3; done | lemonbar-xft -d \
 			-f "$Go Mono:pixelsize=12" \
