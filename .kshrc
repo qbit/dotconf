@@ -30,6 +30,8 @@ load_completion rc
 load_completion git
 load_completion got
 pgrep -q mpd && load_completion mpc
+load_completion ogvt
+load_completion man
 
 #[[ -s ~/.ssh/host_config ]] && read_ssh_config ~/.ssh/host_config
 #set -A complete_ssh -- ${HOST_LIST[*]}
