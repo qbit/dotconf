@@ -41,6 +41,7 @@ alias vi=nvim
 alias got='env EDITOR=nvim got'
 alias lookman='man -k'
 alias gomuks='env GOMUKS_CACHE_HOME=~/.gomuks gomuks'
+alias jfd='doas /usr/sbin/sysupgrade'
 
 # the q prompt auto-loads the git-prompt extension
 set_prompt q
