@@ -1,8 +1,9 @@
 GOT_AUTHOR="Aaron Bieber <aaron@bolddaemon.com>"
 BROWSER=$(which xdg-open 2>/dev/null)
 OHMYKSH_DIR=${HOME}/src/ohmyksh
+OHMYPATCHES=~/patches
 
-export GOT_AUTHOR BROWSER OHMYKSH_DIR
+export GOT_AUTHOR BROWSER OHMYKSH_DIR OHMYPATCHES
 
 . ${OHMYKSH_DIR}/ohmy.ksh
 
@@ -29,6 +30,8 @@ load_completion rc
 load_completion git
 load_completion got
 pgrep -q mpd && load_completion mpc
+load_completion ogvt
+load_completion man
 
 #[[ -s ~/.ssh/host_config ]] && read_ssh_config ~/.ssh/host_config
 #set -A complete_ssh -- ${HOST_LIST[*]}
@@ -40,6 +43,7 @@ alias vi=nvim
 alias got='env EDITOR=nvim got'
 alias lookman='man -k'
 alias gomuks='env GOMUKS_CACHE_HOME=~/.gomuks gomuks'
+alias jfd='doas /usr/sbin/sysupgrade'
 
 # the q prompt auto-loads the git-prompt extension
 set_prompt q
