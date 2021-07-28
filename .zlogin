@@ -9,8 +9,10 @@ if [ -d ~/opt/GNAT/2020/bin ]; then
 fi
 export GNAT
 
-for p in "${HOME}/opt/bin" "${HOME}/opt/sbin" "${GNAT}/bin" "${PLAN9}/bin" "${HOME}/go/bin" "${HOME}/bin" "${HOME}/tinygo/bin"; do
-	PATH="${PATH}:$p"
+for p in "${HOME}/opt/bin" "${HOME}/opt/sbin" "${GNAT}/bin" "${PLAN9}/bin" "${HOME}/go/bin" "${HOME}/bin" "${HOME}/tinygo/bin" /Applications/Emacs.app/Contents/MacOS/bin; do
+	if [ -d $p ]; then
+		PATH="${PATH}:$p"
+	fi
 done
 
 export PATH
