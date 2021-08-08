@@ -1,24 +1,11 @@
-call plug#begin('~/.vim/plugged')
+autocmd BufReadPost *
+\ if line("'\"") > 1 && line("'\"") <= line("$") |
+\   exe "normal! g`\"" |
+\ endif
 
-Plug 'LnL7/vim-nix'
-Plug 'airblade/vim-gitgutter'
-Plug 'fatih/vim-go'
-Plug 'junegunn/fzf'
-Plug 'junegunn/fzf.vim'
-Plug 'w0rp/ale'
-Plug 'ziglang/zig.vim'
-
-Plug 'leafgarland/typescript-vim'
-Plug 'vim-ruby/vim-ruby'
-
-Plug 'prabirshrestha/async.vim' " Needed for vim-lsp
-Plug 'prabirshrestha/vim-lsp' " Language server protocol support
-
-call plug#end()
-
-nmap <Leader>bi :PlugInstall<CR>
-nmap <Leader>bu :PlugUpdate<CR>
-nmap <Leader>bc :PlugClean<CR>
+nmap <Leader>bi :PaqInstall<CR>
+nmap <Leader>bu :PaqUpdate<CR>
+nmap <Leader>bc :PaqClean<CR>
 
 noremap <silent> <Leader>g :GitGutterBufferToggle<CR>
 " Open files in horizontal split
@@ -34,21 +21,6 @@ nnoremap <silent> <Leader>v :call fzf#run({
 command! -bang -nargs=? -complete=dir Files
 	\ call fzf#vim#files(<q-args>, {'options': ['--no-color']}, <bang>0)
 nmap <C-p> :Files<cr>
-
-let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-set encoding=utf8
-set t_Co=256
-syntax off
-
-set nocp
-filetype plugin indent on
-set completeopt=longest,menuone
-
-au BufNewFile,BufRead *.html set tabstop=4 softtabstop=0 expandtab shiftwidth=2 smarttab
-au BufNewFile,BufRead *.js set tabstop=4 softtabstop=0 expandtab shiftwidth=2 smarttab
-au BufNewFile,BufRead *.lua set tabstop=4 softtabstop=0 expandtab shiftwidth=2 smarttab
-au BufNewFile,BufRead *.rb set tabstop=4 softtabstop=0 expandtab shiftwidth=2 smarttab
-au BufNewFile,BufRead *.yml set tabstop=4 softtabstop=0 expandtab shiftwidth=2 smarttab
 
 highlight OverLength ctermfg=red
 match OverLength /\%79v.\+/
