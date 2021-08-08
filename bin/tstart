@@ -28,7 +28,7 @@ else
 	else
 		tmux rename-window "IRC"
 		tmux new-window -n "Mail"
-		tmux new-window -n "Music"
+		tmux new-window -n "Misc"
 		tmux new-window
 	fi
 	tmux select-window -t${IDX}

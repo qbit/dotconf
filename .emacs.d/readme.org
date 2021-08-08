@@ -1069,6 +1069,15 @@ Some go tools use this.
 
 ~mu~ has been the best mail client for me on emacs.
 
+** Initializing mu
+
+The defaults ~mu~ uses make no sense. ~~/.cache~ is for .. caching data, not
+persistent databases.. So we init things with sane defaults:
+
+#+begin_src shell
+mu init --muhome=/home/qbit/.mu -m /home/qbit/Maildir/fastmail/ --my-address="aaron@bolddaemon.com"
+#+end_src
+
 ** General mail configuration
 
 #+begin_src emacs-lisp
