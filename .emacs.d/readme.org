@@ -215,8 +215,7 @@ code.. etc. Combined with ~smex~ for sorting (shows last used things first) and
     ("C-s"     . swiper)
     ("M-x"     . counsel-M-x)
     ("C-x C-f" . counsel-find-file)
-    ("C-x b"   . ivy-switch-buffer)
-    ("C-c n"   . counsel-fzf))
+    ("C-x b"   . ivy-switch-buffer))
 #+end_src
 
 ** magit
@@ -1104,7 +1103,7 @@ mu init --muhome=/home/qbit/.mu -m /home/qbit/Maildir/fastmail/ --my-address="aa
         (setq mail-user-agent 'mu4e-user-agent
               mu4e-get-mail-command "mbsync fastmail"
               mu4e-mu-home (expand-file-name "~/.mu")
-              ;;mu4e-update-interval 420
+              mu4e-update-interval 420
               mu4e-compose-context-policy nil
               mu4e-context-policy 'pick-first
               mu4e-drafts-folder "/Drafts"
