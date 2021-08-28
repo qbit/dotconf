@@ -54,6 +54,19 @@ case "$wmanager" in
 			-B "#FFFFEA" \
 			-F "#000000" | sh &
 		;;
+	/usr/local/bin/xfce4-session)
+		dbus-monitor --session "type='signal',interface='org.xfce.ScreenSaver'" | \
+		while read x; do
+			case "$x" in
+				*"boolean true"*)
+					echo "Locked - clearing keys"
+					/usr/bin/ssh-add -D;
+					/usr/local/bin/rbw lock;
+					/usr/local/bin/sudo -K
+					;;
+			esac
+		done &
+		;;
 	/usr/local/bin/awesome)
 		xsetroot -solid black
 		;;
