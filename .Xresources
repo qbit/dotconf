@@ -49,3 +49,5 @@ Xft.antialias:		true
 Xft.rgba:		rgb
 Xft.hinting:		true
 Xft.hintstyle:		hintslight
+
+Emacs.font:		Go Mono:pixelsize=14:antialias=true:autohint=false
