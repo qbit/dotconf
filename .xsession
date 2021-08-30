@@ -1,4 +1,6 @@
 #!/bin/sh
+export OHMYKSH_DIR=${HOME}/src/ohmyksh
+. ${OHMYKSH_DIR}/ohmy.ksh
 
 mv ~/.cache ~/.tcache && \
 	mkdir ~/.cache
@@ -29,13 +31,8 @@ if [ $OS != "OpenBSD" ]; then
 	LPREFIX=/usr
 fi
 
-xset -b &
-xset +fp ~/.fonts
-xset +fp ~/.local/share/fonts/
-for font in /usr/local/share/fonts/*; do
-	xset +fp "${font}"
-done
-xset fp rehash
+load_extension fonts
+which keychain 2>&1 > /dev/null && load_extension keychain
 
 xrdb -merge -load ~/.Xresources &
 
