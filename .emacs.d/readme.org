@@ -60,6 +60,7 @@ For some reason OpenBSD hangs, these seem to help a bit
 
 Global font
 #+begin_src emacs-lisp
+  ;; This is currently set in ~/.Xresources - for some reason emacs doesn't like the line below
   ;;(set-default-font "Go Regular")
 #+end_src
 
