@@ -1,6 +1,6 @@
 #!/bin/sh
 
-name=$(make show=PKGNAME)
+name=$(make show=FULLPKGNAME)
 fname="${HOME}/patches/${name}.diff"
 
 if [ -d CVS ]; then
