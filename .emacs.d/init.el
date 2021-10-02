@@ -36,7 +36,7 @@
 (require 'ob-tangle)
 
 (defun load-org-config ()
-  ;; this is a convenience function to parse the my literate config.
+  "Reprocess org based configuration files."
   (interactive)
   (mapc #'org-babel-load-file (directory-files emacs-dir t "\\.org$")))
 
