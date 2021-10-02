@@ -23,6 +23,8 @@ require("paq") {
     "neovim/nvim-lspconfig";
     "ziglang/zig.vim";
 
+    "kristijanhusak/orgmode.nvim";
+
     "hrsh7th/nvim-compe";
 }
 
@@ -47,6 +49,11 @@ lspc.gopls.setup {};
 vim.cmd("syntax off");
 vim.cmd("source ~/.config/nvim/dumb.vim");
 o.hlsearch = true;
+
+require('orgmode').setup({
+  org_agenda_files = {'~/org/*'},
+  org_default_notes_file = '~/org/refile.org',
+})
 
 vim.api.nvim_set_keymap("i", "<CR>", "compe#confirm({ 'keys': '<CR>', 'select': v:true })", { expr = true })
 
