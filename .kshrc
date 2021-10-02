@@ -3,7 +3,9 @@ BROWSER=$(which xdg-open 2>/dev/null)
 OHMYKSH_DIR=${HOME}/src/ohmyksh
 OHMYPATCHES=~/patches
 
-export GOT_AUTHOR BROWSER OHMYKSH_DIR OHMYPATCHES
+PKG_PATH="$(cat /etc/installurl)/snapshots/packages/%a"
+
+export GOT_AUTHOR BROWSER OHMYKSH_DIR OHMYPATCHES PKG_PATH
 
 . ${OHMYKSH_DIR}/ohmy.ksh
 
@@ -45,6 +47,7 @@ alias lookman='man -k'
 alias gomuks='env GOMUKS_CACHE_HOME=~/.gomuks gomuks'
 alias jfd='doas /usr/sbin/sysupgrade'
 alias goupdate='make MODGO_VERSION=latest modgo-gen-modules'
+alias scp='scp -s'
 
 # the q prompt auto-loads the git-prompt extension
 set_prompt q
