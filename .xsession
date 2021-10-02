@@ -6,11 +6,9 @@ mv ~/.cache ~/.tcache && \
 	mkdir ~/.cache
 rm -rf ~/.tcache &
 
-# Make ~/Downloads a temp dir
-rm -rf ~/Downloads
-DL_CACHE="/tmp/${USER}_downloads"
-mkdir $DL_CACHE
-ln -sf $DL_CACHE ${HOME}/Downloads
+mv ~/Downloads ~/.tdownloads && \
+	mkdir ~/Downloads
+rm -rf ~/.tdownloads &
 
 # Disable coredumps
 ulimit -Sc 0
