@@ -1460,10 +1460,12 @@ Custom agenda commands for various things.
 ** GOT
 
 #+begin_src emacs-lisp
-  (use-package vc-got
-    :load-path "/home/qbit/.emacs.d/site-lisp/vc-got-1.0/"
-    :defer t
-    :init
-    (add-to-list 'vc-handled-backends 'Got)
-    (add-to-list 'vc-directory-exclusion-list ".got"))
+  (setq vc-got-dir (expand-file-name "~/.emacs.d/site-lisp/vc-got-1.0"))
+  (if (file-directory-p vc-got-dir)
+      (use-package vc-got
+        :load-path vc-got-dir
+        :defer t
+        :init
+        (add-to-list 'vc-handled-backends 'Got)
+        (add-to-list 'vc-directory-exclusion-list ".got")))
 #+end_src
