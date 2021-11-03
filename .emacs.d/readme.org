@@ -1128,6 +1128,10 @@ mu init --muhome=/home/qbit/.mu -m /home/qbit/Maildir/fastmail/ --my-address="aa
                   :query "maildir:/Inbox AND NOT flag:trashed"
                   :key ?i)
                 ,(make-mu4e-bookmark
+                  :name "TODO"
+                  :query "maildir:/TODO AND NOT flag:trashed"
+                  :key ?T)
+                ,(make-mu4e-bookmark
                   :name  "Unread messages"
                   :query "flag:unread AND NOT flag:trashed AND NOT list:ports-changes.openbsd.org AND NOT list:source-changes.openbsd.org"
                   :key ?u)
