@@ -3,12 +3,8 @@
 set -e
 
 rage_dir=~/.rage
-rage_id_file="$(awk -F= '/^identity/{print $NF}' ${rage_dir}/config)"
-rage_recips="$(awk -F= '/^recipients/{print $NF}' ${rage_dir}/config)"
 
-# expand ~ if we have it (age doesn't to it for us)
-rage_id_file=${rage_id_file/#\~/$HOME}
-rage_recips=${rage_recips/#\~/$HOME}
+. ${rage_dir}/config
 
 cmd=$1
 
@@ -34,8 +30,8 @@ case $cmd in
 		fi
 
 		echo "Re-encrypting: '${F}'"
-		pass="$(age -i $rage_id_file -d "${F}")"
-		echo "$pass" | age -a -R "${rage_recips}" > "${F}"
+		pass="$(age -i $identity -d "${F}")"
+		echo "$pass" | age -a -R "${recipients}" > "${F}"
 		;;
 	en)
 		printf 'Password: '
@@ -47,22 +43,22 @@ case $cmd in
 		read loc
 		echo ""
 		mkdir -p "$(dirname ~/.rage/${loc})"
-		echo "$pass" | age -a -R "${rage_recips}" > ~/.rage/${loc}.age
+		echo "$pass" | age -a -R "${recipients}" > ~/.rage/${loc}.age
 		;;
 	de)
 		if [ -f $2 ]; then
-			age -i $rage_id_file -d $2
+			age -i $identity -d $2
 		else
 			F=$(list | grep $2)
-			age -i $rage_id_file -d "${F}"
+			age -i $identity -d "${F}"
 		fi
 		;;
 	otp)
 		if [ -f $2 ]; then
-			age -i $rage_id_file -d $2 | oathtool -b --totp -
+			age -i $identity -d $2 | oathtool -b --totp -
 		else
 			F=$(list | grep $2)
-			age -i $rage_id_file -d "${F}" | oathtool -b --totp -
+			age -i $identity -d "${F}" | oathtool -b --totp -
 		fi
 		;;
 	push)
