@@ -4,7 +4,11 @@ set -e
 
 rage_dir=~/.rage
 rage_id_file="$(awk -F= '/^identity/{print $NF}' ${rage_dir}/config)"
-rage_id_recip="$(awk -F= '/^identity/{print $NF ".pub"}' ${rage_dir}/config)"
+rage_recips="$(awk -F= '/^recipients/{print $NF}' ${rage_dir}/config)"
+
+# expand ~ if we have it (age doesn't to it for us)
+rage_id_file=${rage_id_file/#\~/$HOME}
+rage_recips=${rage_recips/#\~/$HOME}
 
 cmd=$1
 
@@ -21,6 +25,18 @@ case $cmd in
 	ls)
 		list
 		;;
+	re)
+		F=""
+		if [ -f $2 ]; then
+			F=$2
+		else
+			F=$(list | grep $2)
+		fi
+
+		echo "Re-encrypting: '${F}'"
+		pass="$(age -i $rage_id_file -d "${F}")"
+		echo "$pass" | age -a -R "${rage_recips}" > "${F}"
+		;;
 	en)
 		printf 'Password: '
 		stty -echo
@@ -31,7 +47,7 @@ case $cmd in
 		read loc
 		echo ""
 		mkdir -p "$(dirname ~/.rage/${loc})"
-		echo "$pass" | age -r "$(cat ${rage_id_file}.pub)" > ~/.rage/${loc}.age
+		echo "$pass" | age -a -R "${rage_recips}" > ~/.rage/${loc}.age
 		;;
 	de)
 		if [ -f $2 ]; then
@@ -48,6 +64,15 @@ case $cmd in
 			F=$(list | grep $2)
 			age -i $rage_id_file -d "${F}" | oathtool -b --totp -
 		fi
+		;;
+	push)
+		cd $rage_dir
+		git push
+		;;
+	sync)
+		cd $rage_dir
+		git pull
+		git push
 		;;
 	default)
 		list
