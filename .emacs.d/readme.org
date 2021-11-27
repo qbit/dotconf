@@ -22,10 +22,11 @@ shell.
            "/usr/local/bin"
            "/usr/local/go/bin"
            "/usr/local/MacGPG2/bin"
-	   "/Library/TeX/texbin"
+           "/Library/TeX/texbin"
            "/usr/local/jdk-11/bin"
            "/usr/ports/infrastructure/bin"
            "~/bin"
+           "~/.nix-profile/bin"
            "~/go/bin"
            "~/opt/bin"
            "/usr/local/plan9/bin"
@@ -996,7 +997,6 @@ plantuml is a pretty easy way to make decent looking flow chart sorta things.
   (progn
     (setq org-plantuml-jar-path (expand-file-name "~/Docs/plantuml.jar"))
     (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
-    (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))))
 #+end_src
 
 ** Elpher
@@ -1187,6 +1187,16 @@ mu init --muhome=/home/qbit/.mu -m /home/qbit/Maildir/fastmail/ --my-address="aa
 Oh ~org-mode~. It's the reason I started using emacs.. and it's the reason I
 can't quit!
 
+** Config
+
+#+begin_src emacs-lisp
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((plantuml . t)
+     (latex . t)
+     (emacs-lisp . nil)))
+#+end_src
+
 
 ** Publish bits
 
@@ -1251,7 +1261,7 @@ I publish some of my notes [[https://suah.dev/p][on suah.dev/p]]. Also some reci
           ("notes-static"
            :base-directory "~/org/notes"
            :publishing-directory "/ssh:suah.dev:/var/www/htdocs/p/"
-           :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg"
+           :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|svg"
            :recursive t
            :publishing-function org-publish-attachment)
           ("deftly-static"
