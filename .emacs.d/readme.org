@@ -1188,16 +1188,12 @@ Oh ~org-mode~. It's the reason I started using emacs.. and it's the reason I
 can't quit!
 
 ** Config
-
 #+begin_src emacs-lisp
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((plantuml . t)
-     (latex . t)
-     (emacs-lisp . nil)))
+     (latex . t)))
 #+end_src
-
-
 ** Publish bits
 
 I publish some of my notes [[https://suah.dev/p][on suah.dev/p]]. Also some recipes.
@@ -1343,8 +1339,6 @@ I publish some of my notes [[https://suah.dev/p][on suah.dev/p]]. Also some reci
 
 #+begin_src emacs-lisp
   (use-package org
-    ;;:pin "org"
-    :ensure org-plus-contrib
     :hook
     (org-mode . (lambda ()
                   (turn-on-flyspell)
