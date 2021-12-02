@@ -1282,6 +1282,14 @@ I publish some of my notes [[https://suah.dev/p][on suah.dev/p]]. Also some reci
            :include ("index.org")
            :table-of-contents nil
            :base-directory "~/org/notes")
+          ("mammoth"
+           :publishing-directory "/ssh:suah.dev:/var/www/mammoth/"
+           :publishing-function org-html-publish-to-html
+           :author-info nil
+           :creator-info nil
+           :section-numbers nil
+           :recursive t
+           :base-directory "~/org/mammoth")
           ("recipes"
            :auto-preamble t
            :auto-sitemap t
