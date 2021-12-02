@@ -2,6 +2,14 @@
 export OHMYKSH_DIR=${HOME}/src/ohmyksh
 . ${OHMYKSH_DIR}/ohmy.ksh
 
+set -A my_paths -- \
+	/usr/ports/infrastructure/bin \
+	~/bin \
+	~/go/bin \
+	/usr/local/plan9/bin
+
+paths "${my_paths[@]}"
+
 mv ~/.cache ~/.tcache && \
 	mkdir ~/.cache
 rm -rf ~/.tcache &
@@ -19,6 +27,8 @@ LC_CTYPE="en_US.UTF-8"
 TERM=screen-256color
 BROWSER=$(which xdg-open 2>/dev/null)
 export LC_CTYPE TERM BROWSER
+
+TIMEOUT=$(cat ~/.xtimeout 2> /dev/null || echo "300")
 
 OS=$(uname)
 LPREFIX=/usr/local
@@ -48,6 +58,8 @@ case "$wmanager" in
 			-f "$Go Mono:pixelsize=12" \
 			-B "#FFFFEA" \
 			-F "#000000" | sh &
+		xidle -delay 5 -program "/usr/X11R6/bin/xlock" -timeout $TIMEOUT &
+		/usr/X11R6/bin/xcompmgr &
 		;;
 	/usr/local/bin/xfce4-session)
 		dbus-monitor --session "type='signal',interface='org.xfce.ScreenSaver'" | \
@@ -73,7 +85,6 @@ case "$wmanager" in
 		;;
 esac
 
-/usr/X11R6/bin/xcompmgr &
 
 if [ -f ~/.Xmodmap ]; then
 	xmodmap ~/.Xmodmap &
@@ -111,8 +122,5 @@ for tool in tpb xbanish scmpc autocutsel keychain fido; do
 		esac
 	fi
 done
-
-TIMEOUT=$(cat ~/.xtimeout 2> /dev/null || echo "300")
-xidle -delay 5 -program "/usr/X11R6/bin/xlock" -timeout $TIMEOUT &
 
 exec "$wmanager"
