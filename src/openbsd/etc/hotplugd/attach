@@ -11,11 +11,11 @@ case "$DEVNAME" in
 		pkill -USR1 -xf "/usr/bin/perl /usr/local/bin/fido"
 	;;
 	uhidev[0-9])
-		if dmesg | grep -q "Keyboardio Atreus"; then
+		if dmesg | grep -q "HHKB"; then
 			# get the most recently connected keyboard
 			lk=$(wsconsctl | egrep "^keyboard[0-9].encoding" | tail -n 1 | awk -F. '{print $1}')
 			wsconsctl ${lk}.encoding=us
-			echo "Setting $lk to: $(wsconsctl ${lk}.encoding)"
+			logger -t hotplugd "Setting $lk to: $(wsconsctl ${lk}.encoding)"
 		fi
 	;;
 
