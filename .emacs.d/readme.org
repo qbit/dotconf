@@ -1191,10 +1191,8 @@ can't quit!
 #+begin_src emacs-lisp
   (org-babel-do-load-languages
    'org-babel-load-languages
-   '((plantuml . t)))
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((latex . t)))
+   '((plantuml . t)
+     (latex    . t)))
 #+end_src
 ** Publish bits
 
