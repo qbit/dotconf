@@ -41,8 +41,8 @@ Style "xcalc"       Icon xcalc.xpm, NoButton 2,RandomPlacement,ClickToFocus
 Style "xconsole"    Icon rterm.xpm, WindowListSkip, Sticky
 
 # some simple default key bindings:
-Key Next         A       SCM     Next [*] Focus
-Key Prior        A       SCM     Prev [*] Focus
+#Key Next         A       SCM     Next [*] Focus
+#Key Prior        A       SCM     Prev [*] Focus
 
 # some simple default mouse bindings:
 #   for the root window:
