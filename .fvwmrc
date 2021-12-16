@@ -23,21 +23,17 @@ Style "*"           DecorateTransient, NoPPosition
 Style "*"           IconBox 0 -10 -280 -1
 Style "*"           ClickToFocus
 Style "*"           RandomPlacement, SmartPlacement
-Style "*"           Color DimGray/Gray30
-#Style "*"           HilightFore White, HilightBack DimGray
+Style "*"           Color White/Gray30
 
-# Styles for various Fvwm modules:
 Style "Fvwm*"       NoTitle,  Sticky, WindowListSkip
 Style "Fvwm*"       BorderWidth 0, CirculateSkipIcon, CirculateSkip
-Style "FvwmBanner"  StaysOnTop
-Style "FvwmButtons" Icon toolbox.xpm, ClickToFocus
+Style "FvwmButtons" StaysOnTop Icon toolbox.xpm, ClickToFocus
 
 # Styles for your common terminal emulator programs:
 AddToDecor terms
 + ButtonStyle 1 Pixmap mini.xterm.xpm
 Style "XTerm"	UseDecor terms
 Style "XTerm"	Icon xterm.xpm, ClickToFocus, IconBox -70 1 -1 -140
-#Style "XTerm"	WMWBorder, WINButtons
 
 # Styles for various common programs:
 Style "*lock"       NoTitle, NoHandles, Sticky, WindowListSkip, ClickToFocus
