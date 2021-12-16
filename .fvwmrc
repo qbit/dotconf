@@ -283,7 +283,7 @@ Key R		A	M	Exec exec /usr/local/bin/rofi -show run
 *FvwmButtonsRows 1
 *FvwmButtons(Swallow XClock 'Exec xclock -padding 0 -fg white -bg Gray30 -d -render -strftime "%H:%M" &')
 *FvwmButtons(Swallow xbatt 'Exec xbatt &')
-*FvwmButtons(Swallow(UseOld,NoKill) "xload" `Exec xload -title xload -fg DimGray -bg Gray30 -update 3 -nolabel &`)
+*FvwmButtons(Swallow(UseOld,NoKill) "xload" `Exec xload -title xload -fg White -bg Gray30 -update 3 -nolabel &`)
 *FvwmButtons(1x1 Frame 0 Swallow(UseOld) "FvwmPager" "Module FvwmPager 0 0")
 
 ########################## Window-Identifier ###############################
