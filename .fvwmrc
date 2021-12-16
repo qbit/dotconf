@@ -66,13 +66,9 @@ Mouse 3	TSIF	A	RaiseLower
 ######################## Initialization Functions ############################
 AddToFunc "InitFunction" "I" Module FvwmButtons
 +		"I" Next [!iconic CurrentScreen xterm] Focus
-+		"I" CursorMove 30 40
-+		"I" exec /usr/X11R6/bin/xsetroot -solid black
 
 AddToFunc "RestartFunction" "I" Module FvwmButtons
 +		"I" Next [!iconic CurrentScreen xterm] Focus
-+		"I" CursorMove 30 40
-+		"I" exec /usr/X11R6/bin/xsetroot -solid black
 
 
 ######################## Menus ###################
