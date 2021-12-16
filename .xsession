@@ -81,7 +81,7 @@ case "$wmanager" in
 		hsetroot -center ~/.background.png &
 		;;
 	/usr/X11R6/bin/fvwm)
-		xsetroot -solid black
+		echo "fvwm init from InitFunction"
 		;;
 esac
 
