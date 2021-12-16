@@ -67,8 +67,7 @@ case $cmd in
 		;;
 	sync)
 		cd $rage_dir
-		git pull
-		git push
+		git sync
 		;;
 	default)
 		list
