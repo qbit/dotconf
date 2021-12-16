@@ -20,7 +20,7 @@ Style "*"           BorderWidth 4, HandleWidth 4
 Style "*"           Icon unknown1.xpm, Color Grey30
 Style "*"           MWMFunctions, MWMDecor, HintOverride
 Style "*"           DecorateTransient, NoPPosition
-Style "*"           IconBox 0 -10 -280 -1
+Style "*"           IconBox -71 1 -1 -140
 Style "*"           ClickToFocus
 Style "*"           RandomPlacement, SmartPlacement
 Style "*"           Color White/Gray30
@@ -33,12 +33,12 @@ Style "FvwmButtons" StaysOnTop Icon toolbox.xpm, ClickToFocus
 AddToDecor terms
 + ButtonStyle 1 Pixmap mini.xterm.xpm
 Style "XTerm"	UseDecor terms
-Style "XTerm"	Icon xterm.xpm, ClickToFocus, IconBox -70 1 -1 -140
+Style "XTerm"	Icon xterm.xpm, ClickToFocus
 
 # Styles for various common programs:
 Style "*lock"       NoTitle, NoHandles, Sticky, WindowListSkip, ClickToFocus
 Style "xcalc"       Icon xcalc.xpm, NoButton 2,RandomPlacement,ClickToFocus
-Style "xconsole"    Icon rterm.xpm, WindowListSkip, Sticky
+Style "xconsole"    Icon rterm.xpm, WindowListSkip, Sticky, IconBox 0 -10 -280 -1
 
 # some simple default key bindings:
 #Key Next         A       SCM     Next [*] Focus
