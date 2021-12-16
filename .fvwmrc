@@ -105,8 +105,8 @@ AddToMenu RootMenu	"Root Menu"	Title
 +			"Calculator"			Exec exec xcalc
 +			"Emacs"				Exec exec emacs
 +			""		Nop
-+			"Tile Full"			Module  FvwmRearrange -tile -mn 2 1 1 99 99
 +			"Tile"				Module  FvwmRearrange -tile -mn 2 5 5 95 95 
++			"Tile Full"			Module  FvwmRearrange -tile -mn 2 1 1 99 99
 +			"Cascade"			Module  FvwmRearrange -cascade -resize 10 2 80 70
 +			""		Nop
 +			"Volume Control"		Popup VolumeMenu
@@ -226,12 +226,6 @@ AddToFunc PrintReverseFunction  "I" Raise
 AddToFunc Iconify-and-Raise     "I" Iconify
 +                               "I" Raise
 
-# RLOGIN machine fg bg
-AddToFunc RLOGIN "I" Exec xterm -fg $1 -bg $2 -e rlogin $0 -8
-
-# TELNET machine fg bg
-AddToFunc TELNET "I" Exec xterm -fg $1 -bg $2 -e telnet $0
-
 AddToFunc FocusAndWarp "I" Focus
 +                      "I" WarpToWindow 2p 2p
 
@@ -245,6 +239,7 @@ AddToFunc ChangeDefaultFocus "I" Style "*" $0
 # Now some keyboard shortcuts.
 
 Key Tab A M WindowList Root c c NoDeskSort, SelectOnRelease Meta_L
+Key Return	A	MC	Exec	/usr/X11R6/bin/xterm
 
 # press shift arrow + control anywhere, and move the pointer by 1% of a page
 Key Left	A	SC	CursorMove -1	0
