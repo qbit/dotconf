@@ -105,7 +105,7 @@ AddToMenu RootMenu	"Root Menu"	Title
 +			"Calculator"			Exec exec xcalc
 +			"Emacs"				Exec exec emacs
 +			""		Nop
-+			"Tile"				Module  FvwmRearrange -tile -mn 2 5 5 95 95 
++			"Tile"				Module  FvwmRearrange -tile -mn 2 5 5 95 95
 +			"Tile Full"			Module  FvwmRearrange -tile -mn 2 1 1 99 99
 +			"Cascade"			Module  FvwmRearrange -cascade -resize 10 2 80 70
 +			""		Nop
