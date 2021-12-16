@@ -364,8 +364,7 @@ Key R		A	M	Exec exec /usr/local/bin/rofi -show run
 *FvwmIconBox            "Fvwm*"         -
 
 # FvwmForm alias - query exit ala mwm
-*QuitVerifyGrabServer
-*QuitVerifyWarpPointer
+*QuitVerifyFont          *helvetica*m*r*n*14*
 *QuitVerifyFont		"-*-ubuntu mono-medium-*-*-*-14-*-*-*-*-*-*-*"
 *QuitVerifyButtonFont    7x13bold
 *QuitVerifyFore          Black
