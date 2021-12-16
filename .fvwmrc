@@ -98,12 +98,12 @@ AddToMenu VolumeMenu  "Volume Control"  Title
 +       "Volume   0%%"          exec mixerctl -q outputs.master=0
 
 AddToMenu RootMenu	"Root Menu"	Title
-+			"XTerm%mini.xterm.xpm%"		Exec exec xterm
++			"XTerm"				Exec exec xterm
 +			"Browser"			Exec exec chrome
 +			"Calculator"			Exec exec xcalc
 +			"Emacs"				Exec exec emacs
 +			""		Nop
-#+			"Tile"				Module  FvwmRearrange -tile -mn 2 
++			"Tile Full"			Module  FvwmRearrange -tile -mn 2 1 1 99 99
 +			"Tile"				Module  FvwmRearrange -tile -mn 2 5 5 95 95 
 +			"Cascade"			Module  FvwmRearrange -cascade -resize 10 2 80 70
 +			""		Nop
@@ -118,7 +118,7 @@ AddToMenu RootMenu	"Root Menu"	Title
 +                       "Recapture Screen"		Recapture
 +		      	"Restart Fvwm"			Restart fvwm
 +			""		Nop
-+                       "XLock%mini.xlock.xpm%"         Exec exec xlock
++                       "Lock Screen"			Exec exec xlock
 +			""		Nop
 +                       "Exit"				Module FvwmForm QuitVerify
 
