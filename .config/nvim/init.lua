@@ -23,6 +23,7 @@ require("paq") {
     "neovim/nvim-lspconfig";
     "ziglang/zig.vim";
 
+    "nvim-treesitter/nvim-treesitter";
     "kristijanhusak/orgmode.nvim";
 
     "hrsh7th/nvim-compe";
