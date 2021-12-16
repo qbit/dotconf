@@ -1192,6 +1192,7 @@ can't quit!
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((plantuml . t)
+     (dot      . t)
      (latex    . t)))
 #+end_src
 ** Publish bits
