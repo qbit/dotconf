@@ -6,16 +6,16 @@ EdgeResistance 250 10
 EdgeScroll 100 100
 ClickTime 750
 
-IconFont "-adobe-helvetica-bold-r-normal--12-120-75-75-p-70-iso8859-1"
-WindowFont "-adobe-helvetica-bold-r-normal--12-120-75-75-p-70-iso8859-1"
+WindowFont -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*
+IconFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
 
-MenuStyle #000000 #ffffea #dedeff -adobe-helvetica-bold-r-normal--12-120-75-75-p-70-iso8859-1 fvwm
+MenuStyle #000000 #ffffea #dedeff -adobe-times-bold-r-*-*-12-*-*-*-*-*-*-* fvwm
 
 DeskTopSize 2x2
 
 ColormapFocus FollowsFocus
 
-# default Styles:
+# Default styles
 Style "*"           BorderWidth 4, HandleWidth 4
 Style "*"           Icon unknown1.xpm, Color Grey30
 Style "*"           MWMFunctions, MWMDecor, HintOverride
