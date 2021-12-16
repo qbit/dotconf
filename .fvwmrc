@@ -66,7 +66,9 @@ Mouse 3	TSIF	A	RaiseLower
 ######################## Initialization Functions ############################
 AddToFunc "InitFunction" "I" Module FvwmButtons
 +		"I" Next [!iconic CurrentScreen xterm] Focus
-
++		"I" Exec /usr/X11R6/bin/xidle -delay 5 -program "/usr/X11R6/bin/xlock" -timeout 300
++		"I" Exec /usr/X11R6/bin/xcompmgr
++		"I" Exec /usr/local/bin/hsetroot -center ~/.background.png
 AddToFunc "RestartFunction" "I" Module FvwmButtons
 +		"I" Next [!iconic CurrentScreen xterm] Focus
 
