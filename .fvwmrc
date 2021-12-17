@@ -279,7 +279,7 @@ Key R		A	M	Exec exec /usr/local/bin/rofi -show run
 *FvwmButtonsGeometry 300x50-0-0
 *FvwmButtonsRows 1
 *FvwmButtons(Swallow XClock 'Exec xclock -padding 0 -fg white -bg Gray30 -d -render -strftime "%H:%M" &')
-*FvwmButtons(Swallow trayer 'Exec /usr/local/bin/trayer --width 50 --widthtype pixel --height 50 --heighttype pixel --transparent true &')
+*FvwmButtons(Swallow stalonetray 'Exec /usr/local/bin/stalonetray --geometry 3x3+0-0 &')
 *FvwmButtons(Swallow xbatt 'Exec /usr/local/bin/xbatt &')
 *FvwmButtons(Swallow(UseOld,NoKill) "xload" `Exec xload -title xload -fg White -bg Gray30 -update 3 -nolabel &`)
 *FvwmButtons(1x1 Frame 0 Swallow(UseOld) "FvwmPager" "Module FvwmPager 0 0")
