@@ -15,7 +15,13 @@ DeskTopSize 2x2
 
 ColormapFocus FollowsFocus
 
+AddToDecor flatness
++ ButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
++ TitleStyle -- flat
++ BorderStyle -- HiddenHandles NoInset
+
 # Default styles
+Style "*"           UseDecor flatness
 Style "*"           BorderWidth 4, HandleWidth 4
 Style "*"           Icon unknown1.xpm, Color Grey30
 Style "*"           MWMFunctions, MWMDecor, HintOverride
