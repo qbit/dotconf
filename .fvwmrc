@@ -291,10 +291,8 @@ Key R		A	M	Exec exec /usr/local/bin/rofi -show run
 *FvwmIdentFont "-*-helvetica-medium-r-*-*-12-*"
 
 ########################### Pager #########################################
-*FvwmPagerFont none
-*FvwmPagerSmallFont	"-*-ubuntu mono-medium-*-*-*-12-*-*-*-*-*-*-*"
 *FvwmPagerBack Gray30
-*FvwmPagerFore Black
+*FvwmPagerFore White
 *FvwmPagerHilight DimGray
 *FvwmPagerGeometry 128x96-1-1
 
