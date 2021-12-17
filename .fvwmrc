@@ -98,7 +98,7 @@ AddToMenu RootMenu	"Root Menu"	Title
 +			"XTerm"				Exec exec xterm
 +			"Browser"			Exec exec chrome
 +			"Calculator"			Exec exec xcalc
-+			"Emacs"				Exec exec emacs
++			"Emacs"				Exec exec /usr/local/bin/emacs
 +			""		Nop
 +			"Tile"				Module  FvwmRearrange -tile -mn 2 5 5 95 95
 +			"Tile Full"			Module  FvwmRearrange -tile -mn 2 1 1 99 99
@@ -116,6 +116,8 @@ AddToMenu RootMenu	"Root Menu"	Title
 +		      	"Restart Fvwm"			Restart fvwm
 +			""		Nop
 +                       "Lock Screen"			Exec exec xlock
++			""		Nop
++                       "Save Desktop"			Module 	FvwmSaveDesk
 +			""		Nop
 +                       "Exit"				Module FvwmForm QuitVerify
 
@@ -353,3 +355,5 @@ Key R		A	M	Exec exec /usr/local/bin/rofi -show run
 *QuitVerifyCommand  Quit
 *QuitVerifyButton   quit      "Cancel"
 *QuitVerifyCommand  Nop
+
+m4_include('.fvwm2desk') .
