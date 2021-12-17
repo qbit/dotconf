@@ -35,20 +35,10 @@ Style "Fvwm*"       NoTitle,  Sticky, WindowListSkip
 Style "Fvwm*"       BorderWidth 0, CirculateSkipIcon, CirculateSkip
 Style "FvwmButtons" StaysOnTop Icon toolbox.xpm, ClickToFocus
 
-# Styles for your common terminal emulator programs:
-AddToDecor terms
-+ ButtonStyle 1 Pixmap mini.xterm.xpm
-Style "XTerm"	UseDecor terms
-Style "XTerm"	Icon xterm.xpm, ClickToFocus
-
 # Styles for various common programs:
 Style "*lock"       NoTitle, NoHandles, Sticky, WindowListSkip, ClickToFocus
 Style "xcalc"       Icon xcalc.xpm, NoButton 2,RandomPlacement,ClickToFocus
 Style "xconsole"    Icon rterm.xpm, WindowListSkip, Sticky, IconBox 0 -10 -280 -1
-
-# some simple default key bindings:
-#Key Next         A       SCM     Next [*] Focus
-#Key Prior        A       SCM     Prev [*] Focus
 
 # some simple default mouse bindings:
 #   for the root window:
@@ -77,7 +67,6 @@ AddToFunc "InitFunction" "I" Module FvwmButtons
 +		"I" Exec /usr/local/bin/hsetroot -center ~/.background.png
 AddToFunc "RestartFunction" "I" Module FvwmButtons
 +		"I" Next [!iconic CurrentScreen xterm] Focus
-
 
 ######################## Menus ###################
 AddToMenu BacklightMenu "Backlight Control" Title
@@ -285,8 +274,8 @@ Key R		A	M	Exec exec /usr/local/bin/rofi -show run
 *FvwmButtonsGeometry 300x50-0-0
 *FvwmButtonsRows 1
 *FvwmButtons(Swallow XClock 'Exec xclock -padding 0 -fg white -bg Gray30 -d -render -strftime "%H:%M" &')
-*FvwmButtons(Swallow stalonetray 'Exec /usr/local/bin/stalonetray --geometry 3x3+0-0 &')
 *FvwmButtons(Swallow xbatt 'Exec /usr/local/bin/xbatt &')
+*FvwmButtons(Swallow stalonetray 'Exec /usr/local/bin/stalonetray --geometry 3x3+0-0 &')
 *FvwmButtons(Swallow(UseOld,NoKill) "xload" `Exec xload -title xload -fg White -bg Gray30 -update 3 -nolabel &`)
 *FvwmButtons(1x1 Frame 0 Swallow(UseOld) "FvwmPager" "Module FvwmPager 0 0")
 
@@ -294,7 +283,6 @@ Key R		A	M	Exec exec /usr/local/bin/rofi -show run
 # Just choose colors and a fonts
 *FvwmIdentBack MidnightBlue
 *FvwmIdentFore Yellow
-*FvwmIdentFont "-*-helvetica-medium-r-*-*-12-*"
 
 ########################### Pager #########################################
 *FvwmPagerBack Gray30
@@ -305,25 +293,17 @@ Key R		A	M	Exec exec /usr/local/bin/rofi -show run
 ##########################FvwmWinList##################################
 *FvwmWinListBack #908090
 *FvwmWinListFore Black
-*FvwmWinListFont "xft:Ubuntu Mono:Medium:Roman:size=10:encoding=iso8859-1"
 *FvwmWinListAction Click1 Iconify -1,Focus
 *FvwmWinListAction Click2 Iconify
 *FvwmWinListAction Click3 Module "FvwmIdent" FvwmIdent
 *FvwmWinListUseSkipList
 *FvwmWinListGeometry +0-1
 
-
 *FvwmBackerDesk 0 -solid Grey30
 *FvwmBackerDesk 1 -solid Grey50
 
 *FvwmScrollBack grey40
 *FvwmScrollFore green
-
-############################################################
-############################################################
-# Note that icons are shown in the module
-#    only if NoIcon commnand is applied.
-#Style     "*"  NoIcon
 
 ############################################################
 *FvwmIconBoxIconBack    #cfcfcf
@@ -333,7 +313,6 @@ Key R		A	M	Exec exec /usr/local/bin/rofi -show run
 #*FvwmIconBoxFore       blue
 *FvwmIconBoxGeometry    5x1+0+0
 *FvwmIconBoxMaxIconSize 64x38
-*FvwmIconBoxFont	"-*-ubuntu mono-medium-*-*-*-12-*-*-*-*-*-*-*"
 *FvwmIconBoxSortIcons   IconName
 *FvwmIconBoxPadding     4
 *FvwmIconBoxLines       10
@@ -366,13 +345,6 @@ Key R		A	M	Exec exec /usr/local/bin/rofi -show run
 *FvwmIconBox            "Fvwm*"         -
 
 # FvwmForm alias - query exit ala mwm
-*QuitVerifyFont          *helvetica*m*r*n*14*
-*QuitVerifyFont		"-*-ubuntu mono-medium-*-*-*-14-*-*-*-*-*-*-*"
-*QuitVerifyButtonFont    7x13bold
-*QuitVerifyFore          Black
-*QuitVerifyBack          Light Gray
-*QuitVerifyItemFore Wheat
-*QuitVerifyItemBack Gray50
 # begin items
 *QuitVerifyLine          center
 *QuitVerifyText          "Do you really want to exit FVWM?"
