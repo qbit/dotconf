@@ -6,10 +6,9 @@ EdgeResistance 250 10
 EdgeScroll 100 100
 ClickTime 750
 
-WindowFont -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*
-IconFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
-
-MenuStyle #000000 #ffffea #dedeff -adobe-times-bold-r-*-*-12-*-*-*-*-*-*-* fvwm
+WindowFont -adobe-helvetica-bold-r-normal-*-12-*-*-*-*-*-iso10646-1
+IconFont -adobe-helvetica-bold-r-normal-*-12-*-*-*-*-*-iso10646-1
+MenuStyle #000000 #ffffea #dedeff -adobe-helvetica-bold-r-normal-*-12-*-*-*-*-*-iso10646-1 fvwm
 
 DeskTopSize 2x2
 
@@ -19,6 +18,7 @@ AddToDecor flatness
 + ButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
 + TitleStyle -- flat
 + BorderStyle -- HiddenHandles NoInset
++ WindowFont -adobe-helvetica-bold-r-normal-*-12-*-*-*-*-*-iso10646-1
 
 # Default styles
 Style "*"           UseDecor flatness
