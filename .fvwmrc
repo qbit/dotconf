@@ -141,10 +141,6 @@ AddToMenu Window-Ops2	"&Move"		Move
 +			"&Delete"	Delete
 +			"&Close"	Close
 +			"Destroy"	Destroy
-+			""		Nop
-+			"ScrollBar" 	Module FvwmScroll 2 2
-+			"Print"         PrintFunction
-#+                       "Print Reverse" PrintReverseFunction
 
 ######################## Sample Functions ##########################
 
@@ -171,24 +167,6 @@ AddToFunc Resize-or-Raise	"I" Raise
 AddToFunc Resize-or-Raise2	"M" Raise
 +				"M" Resize
 +				"D" Lower
-
-AddToFunc PrintFunction		"I" Raise
-+				"I" Exec xdpr -id $w
-
-AddToFunc PrintReverseFunction  "I" Raise
-+                               "I" Exec xdpr 1/2 -h -rv -id $w
-
-AddToFunc Iconify-and-Raise     "I" Iconify
-+                               "I" Raise
-
-AddToFunc FocusAndWarp "I" Focus
-+                      "I" WarpToWindow 2p 2p
-
-AddToFunc DeiconifyFocusAndWarp "I" Iconify -1
-+                               "I" FocusAndWarp
-
-AddToFunc ChangeDefaultFocus "I" Style "*" $0
-+                            "I" Recapture
 
 ############################################################################
 # Now some keyboard shortcuts.
