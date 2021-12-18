@@ -93,22 +93,27 @@ AddToMenu VolumeMenu  "Volume Control"  Title
 +       "Volume  10%%"          exec mixerctl -q outputs.master=20
 +       "Volume   0%%"          exec mixerctl -q outputs.master=0
 
+AddToMenu IDEMenu  "IDEs"  Title
++       "Emacs"			exec /usr/local/bin/emacs
++       "GoLand"		exec /usr/local/bin/goland
++       "IntelliJ"		exec /usr/local/bin/intellij
+
 AddToMenu RootMenu	"Root Menu"	Title
 +			"XTerm"				Exec exec xterm
 +			"Browser"			Exec exec chrome
-+			"Calculator"			Exec exec xcalc
 +			"Emacs"				Exec exec /usr/local/bin/emacs
 +			""		Nop
++			"IDEs"				Popup	IDEMenu
++			""		Nop
 +			"Tile"				Module  FvwmRearrange -tile -mn 2 5 5 95 95
-+			"Tile Full"			Module  FvwmRearrange -tile -mn 2 1 1 99 99
-+			"Cascade"			Module  FvwmRearrange -cascade -resize 10 2 80 70
++			"Tile Full"			Module  FvwmRearrange -tile -mn 2 3 3 97 97
++			"Cascade"			Module  FvwmRearrange -cascade -resize 5 5 90 90
 +			""		Nop
 +			"Volume Control"		Popup VolumeMenu
 +                       "Backlight Control"		Popup BacklightMenu
 +			""		Nop
 +			"Identify"			Module	FvwmIdent
 +			""		Nop
-+                       "Refresh Screen"		Refresh
 +		      	"Restart Fvwm"			Restart fvwm
 +			""		Nop
 +                       "Lock Screen"			Exec exec xlock
@@ -127,8 +132,6 @@ AddToMenu Window-Ops	"Window Ops"	Title
 +			"Delete"	Delete
 +			"Close"		Close
 +			"Destroy"	Destroy
-+			""		Nop
-+			"Refresh Window" RefreshWindow
 
 AddToMenu Window-Ops2	"&Move"		Move
 +			"&Resize"	Resize
