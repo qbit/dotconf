@@ -1,6 +1,7 @@
 [user]
 	email = aaron@bolddaemon.com
 	name = Aaron Bieber
+	signingkey = 35863350BFEAC101DB1A4AF01F81112D62A9ADCE
 
 [branch]
 	sort = -committerdate
