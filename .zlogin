@@ -26,8 +26,12 @@ autoload -Uz colors && colors
 #[ -n "$BASH" ] && complete -F _fzf_complete_doge -o default -o bashdefault doge
 
 export GPG_AGENT_INFO="~/.gnupg/S.gpg-agent:$(pgrep gpg-agent):1"
-#/usr/local/bin/keychain --inherit any --agents ssh,gpg -q -Q
-#[[ -f ~/.keychain/ufo.local-sh-gpg  ]] && . ~/.keychain/ufo.local-sh-gpg
+if which -s keychain >/dev/null; then
+	keychain --inherit any --agents ssh,gpg -q -Q
+fi
+MYNAME=$(uname -n)
+[[ -f ~/.keychain/${MYNAME}-sh ]] && . ~/.keychain/${MYNAME}-sh
+[[ -f ~/.keychain/${MYNAME}-sh-gpg  ]] && . ~/.keychain/${MYNAME}-sh-gpg
 
 precmd_vcs_info() { vcs_info }
 precmd_functions+=( precmd_vcs_info )
