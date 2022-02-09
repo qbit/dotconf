@@ -22,6 +22,7 @@ require("paq") {
     "junegunn/fzf.vim";
     "neovim/nvim-lspconfig";
     "ziglang/zig.vim";
+    "thindil/Ada-Bundle";
 
     "nvim-treesitter/nvim-treesitter";
     "kristijanhusak/orgmode.nvim";

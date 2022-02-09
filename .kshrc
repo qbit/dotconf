@@ -28,7 +28,7 @@ load_extension pkgup
 load_completion ssh
 pgrep -q vmd && load_completion vmd
 load_completion rc
-[ -d ~/.password-store ] && load_completion gopass
+#[ -d ~/.password-store ] && load_completion gopass
 load_completion git
 load_completion got
 pgrep -q mpd && load_completion mpc
@@ -42,7 +42,7 @@ alias dotconf='/usr/local/bin/git --git-dir=$HOME/.dotconf --work-tree=$HOME'
 alias mutt='stty discard undef; neomutt'
 alias tmux="tmux -u2"
 alias vi=nvim
-alias got='env EDITOR=nvim got'
+#alias got='env EDITOR=nvim got'
 alias lookman='man -k'
 alias gomuks='env GOMUKS_CACHE_HOME=~/.gomuks gomuks'
 alias jfd='doas /usr/sbin/sysupgrade'

@@ -1006,6 +1006,10 @@ Elpher is a nice little gemini / gopher client.
 #+end_src
 
 * Language Configs
+** Ada
+#+begin_src emacs-lisp
+  (use-package ada-mode)
+#+end_src
 ** Go configuration
 *** go-add-tags
 
