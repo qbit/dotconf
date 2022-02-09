@@ -39,6 +39,9 @@
 [github]
 	user = qbit
 
+[url "ssh://git@github.com/"]
+	insteadOf = https://github.com/
+
 [sendemail]
 	smtpserver = mail.messagingengine.com
 	smtpuser = qbit@fastmail.com
