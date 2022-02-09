@@ -1,3 +1,7 @@
+if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+  . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+fi
+
 PLAN9=/usr/local/plan9/
 if [ -d ~/src/plan9port ]; then
 	PLAN9=~/src/plan9port
