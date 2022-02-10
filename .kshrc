@@ -48,6 +48,7 @@ alias gomuks='env GOMUKS_CACHE_HOME=~/.gomuks gomuks'
 alias jfd='doas /usr/sbin/sysupgrade'
 alias goupdate='make MODGO_VERSION=latest modgo-gen-modules'
 alias scp='scp -s'
+alias ocvs='cvs -dabieber@cvs.openbsd.org:/cvs'
 
 # the q prompt auto-loads the git-prompt extension
 set_prompt q

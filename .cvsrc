@@ -1,4 +1,3 @@
-#cvs -q -dabieber@cvs.openbsd.org:/cvs
 cvs -q -danoncvs@obsdacvs.cs.toronto.edu:/cvs
 diff -upN
 update -Pd
