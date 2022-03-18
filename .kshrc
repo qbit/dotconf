@@ -13,6 +13,7 @@ set -A my_paths -- \
 	/usr/ports/infrastructure/bin \
 	~/bin \
 	~/go/bin \
+	~/.cargo/bin \
 	/usr/local/plan9/bin
 
 paths "${my_paths[@]}"
