@@ -45,5 +45,4 @@
   (mapc #'org-babel-load-file (directory-files emacs-dir t "\\.org$")))
 
 (load-org-config)
-
 ;;; init.el ends here
