@@ -1,0 +1,16 @@
+##### Yashrc #####
+
+. --autoload --no-alias initialization/common
+
+alias dotconf='/usr/local/bin/git --git-dir=$HOME/.dotconf --work-tree=$HOME'
+alias mutt='stty discard undef; neomutt'
+alias tmux="tmux -u2"
+alias vi=nvim
+#alias got='env EDITOR=nvim got'
+alias lookman='man -k'
+alias gomuks='env GOMUKS_CACHE_HOME=~/.gomuks gomuks'
+alias jfd='doas /usr/sbin/sysupgrade'
+alias goupdate='make MODGO_VERSION=latest modgo-gen-modules'
+alias scp='scp -s'
+alias ocvs='cvs -dabieber@cvs.openbsd.org:/cvs'
+
