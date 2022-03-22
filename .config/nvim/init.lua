@@ -1,5 +1,6 @@
 local execute = vim.api.nvim_command
 local fn = vim.fn
+local cmd = vim.cmd
 local map = vim.api.nvim_set_keymap
 local o = vim.o
 
@@ -24,6 +25,7 @@ require("paq") {
     "ziglang/zig.vim";
     "thindil/Ada-Bundle";
 
+    "kyazdani42/nvim-tree.lua";
     "nvim-treesitter/nvim-treesitter";
     "kristijanhusak/orgmode.nvim";
 
@@ -48,14 +50,35 @@ require("compe").setup {
 local lspc = require("lspconfig") 
 lspc.gopls.setup {};
 
-vim.cmd("syntax off");
-vim.cmd("source ~/.config/nvim/dumb.vim");
+cmd("syntax off");
+cmd("source ~/.config/nvim/dumb.vim");
+
+cmd("highlight OverLength ctermfg=red")
+cmd("match OverLength /\\%79v.\\+/")
+
+cmd("set dir=~/.swaps")
+cmd("set nolist")
+cmd("set ruler")
+cmd("set mouse-=a")
+
 o.hlsearch = true;
+
+require'nvim-tree'.setup()
 
 require('orgmode').setup({
   org_agenda_files = {'~/org/*'},
   org_default_notes_file = '~/org/refile.org',
 })
+map("i", "<CR>", "compe#confirm({ 'keys': '<CR>', 'select': v:true })", { expr = true })
+map('n', '<C-n>', ':NvimTreeToggle<CR>', {noremap = true})
+map('n', '<leader>r', ':NvimTreeRefresh<CR>', {noremap = true})
+map('n', '<leader>n', ':NvimTreeFindFile<CR>', {noremap = true})
+map('n', '<leader>bi', ':PaqInstall<CR>', {noremap = true})
+map('n', '<leader>bu', ':PaqUpdate<CR>', {noremap = true})
+map('n', '<leader>bc', ':PaqClean<CR>', {noremap = true})
 
-vim.api.nvim_set_keymap("i", "<CR>", "compe#confirm({ 'keys': '<CR>', 'select': v:true })", { expr = true })
+map('n', '<learder>1', ':GitGutterToggle<CR>', {noremap = true})
+map('n', '<learder>2', ':set list!<CR>', {noremap = true})
+map('n', '<learder>3', ':set nu!<CR>', {noremap = true})
+map('n', '<learder>4', ':set paste!<CR>', {noremap = true})
 
