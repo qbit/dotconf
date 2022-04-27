@@ -38,9 +38,10 @@ main = do
     ewmh $
     withUrgencyHook LibNotifyUrgencyHook $
     def
-      { normalBorderColor = "#666666"
-      , focusedBorderColor = "darkgrey"
+      { normalBorderColor = "#666"
+      , focusedBorderColor = "#ccc"
       , focusFollowsMouse = False
+      , clickJustFocuses = False
       , terminal = "xfce4-terminal"
       , workspaces = myWorkspaces
       , startupHook = myStartupHook
@@ -113,20 +114,7 @@ myManageHook =
 myStartupHook :: X ()
 myStartupHook = do
   spawn "pkill polybar; polybar tal"
-  --spawnOnce "urxvtc -name Mail"
   spawnOnce "xfce4-terminal"
   spawnOnce "chrome"
   spawnOnce "emacs"
   spawnOnce "nheko"
---myXmoStatus :: String
---myXmoStatus = "xmobar"
---myXmoPP :: PP
---myXmoPP = xmobarPP
---  {
---    ppCurrent = xmobarColor "#443740" "" . wrap " " " "
---  , ppHidden  = xmobarColor "#ffffff" "" . wrap " " " "
---  , ppUrgent  = xmobarColor "#ff0000" "" . wrap " " " "
---  , ppSep     = "     "
---  , ppLayout  = xmobarColor "#ffffff" "" . wrap "|" "|"
---  , ppTitle   = xmobarColor "#ffffff" "" . shorten 20
---  }
