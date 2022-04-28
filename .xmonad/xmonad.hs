@@ -54,17 +54,17 @@ main = do
 myKeys :: XConfig t -> M.Map (KeyMask, KeySym) (X ())
 myKeys (XConfig {XMonad.modMask = modm}) =
   M.fromList
-    [ ((modm .|. shiftMask, xK_Right), shiftToNext)
-    , ((modm .|. shiftMask, xK_Left), shiftToPrev)
-    , ((modm, xK_r), spawn "rofi -show run")
+    [ ((modm .|. controlMask, xK_comma), onGroup W.focusDown')
     , ((modm .|. controlMask, xK_h), sendMessage $ pullGroup L)
-    , ((modm .|. controlMask, xK_l), sendMessage $ pullGroup R)
-    , ((modm .|. controlMask, xK_k), sendMessage $ pullGroup U)
     , ((modm .|. controlMask, xK_j), sendMessage $ pullGroup D)
+    , ((modm .|. controlMask, xK_k), sendMessage $ pullGroup U)
+    , ((modm .|. controlMask, xK_l), sendMessage $ pullGroup R)
     , ((modm .|. controlMask, xK_m), withFocused (sendMessage . MergeAll))
-    , ((modm .|. controlMask, xK_u), withFocused (sendMessage . UnMerge))
     , ((modm .|. controlMask, xK_period), onGroup W.focusUp')
-    , ((modm .|. controlMask, xK_comma), onGroup W.focusDown')
+    , ((modm .|. controlMask, xK_u), withFocused (sendMessage . UnMerge))
+    , ((modm .|. shiftMask, xK_Left), shiftToPrev)
+    , ((modm .|. shiftMask, xK_Right), shiftToNext)
+    , ((modm, xK_r), spawn "rofi -show run")
     ]
 
 myWorkspaces :: [String]
@@ -114,6 +114,7 @@ myManageHook =
 myStartupHook :: X ()
 myStartupHook = do
   spawn "pkill polybar; polybar tal"
+  spawn "feh --bg-fill ~/.background.jpg"
   spawnOnce "xfce4-terminal"
   spawnOnce "chrome"
   spawnOnce "emacs"
