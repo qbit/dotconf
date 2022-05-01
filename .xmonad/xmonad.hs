@@ -108,6 +108,7 @@ myManageHook =
     , className =? "VLC" --> doFloat
     , className =? "Pinentry-gtk-2" --> doFloat
     , className =? "Pinentry-gnome3" --> doFloat
+    , className =? "Klavaro" --> doFloat
     , className =? "XConsole" --> doF (W.shift (myWorkspaces !! 8))
     ]
 
