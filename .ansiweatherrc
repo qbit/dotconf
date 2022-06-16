@@ -1,0 +1,6 @@
+location:Pueblo, CO
+fetch_cmd:ftp -V -o -
+units:metric
+show_daylight:true
+ansi:false
+symbols:true
