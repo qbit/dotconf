@@ -19,7 +19,7 @@ mv ~/Downloads ~/.tdownloads && \
 rm -rf ~/.tdownloads &
 
 # Disable coredumps
-ulimit -Sc 0
+#ulimit -Sc 0
 
 cat /dev/null > ~/.xsession-errors
 
@@ -53,7 +53,6 @@ case "$wmanager" in
 		xsetroot -solid black
 		;;
 	/usr/X11R6/bin/cwm|/usr/local/bin/spectrwm)
-		xsetroot -solid black
 		while true; do ~/bin/bar; sleep 3; done | lemonbar-xft -d \
 			-f "$Go Mono:pixelsize=12" \
 			-B "#FFFFEA" \
@@ -77,8 +76,9 @@ case "$wmanager" in
 	/usr/local/bin/awesome)
 		xsetroot -solid black
 		;;
-	xmonad-x86_64-openbsd)
-		hsetroot -center ~/.background.png &
+	xmonad)
+		hsetroot -center ~/.background.jpg &
+		xidle -delay 5 -program "/usr/X11R6/bin/xlock" -timeout $TIMEOUT &
 		;;
 	/usr/X11R6/bin/fvwm)
 		echo "fvwm init from InitFunction"
