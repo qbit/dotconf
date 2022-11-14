@@ -14,8 +14,7 @@ else
 fi
 echo "Created: $fname"
 echo "Syncing..."
-openrsync -a --rsync-path=/usr/bin/openrsync \
-	${HOME}/patches/ suah.dev:/var/www/deftly/patches/
+rsync -a  ${HOME}/patches/ suah.dev:/var/www/deftly.net/patches/
 URL="https://deftly.net/patches/${name}.diff"
 echo ${URL}
 

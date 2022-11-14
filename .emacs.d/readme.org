@@ -1106,7 +1106,6 @@ mu init --muhome=/home/qbit/.mu -m /home/qbit/Maildir/fastmail/ --my-address="aa
         (require 'org-mu4e)
         (setq mail-user-agent 'mu4e-user-agent
               mu4e-get-mail-command "mbsync fastmail"
-              mu4e-mu-home (expand-file-name "~/.mu")
               mu4e-update-interval 420
               mu4e-compose-context-policy nil
               mu4e-context-policy 'pick-first
@@ -1126,60 +1125,48 @@ mu init --muhome=/home/qbit/.mu -m /home/qbit/Maildir/fastmail/ --my-address="aa
                  ((and fname (string-match "\\.diff.gz$" fname))  "~/patches")
                  (t "~/Downloads")))
               mu4e-bookmarks
-              `(,(make-mu4e-bookmark
-                  :name "Inbox"
+              `(( :name "Inbox"
                   :query "maildir:/Inbox AND NOT flag:trashed"
                   :key ?i)
-                ,(make-mu4e-bookmark
-                  :name "TODO"
+                ( :name "TODO"
                   :query "maildir:/TODO AND NOT flag:trashed"
                   :key ?T)
-                ,(make-mu4e-bookmark
-                  :name  "Unread messages"
+                ( :name  "Unread messages"
                   :query "flag:unread AND NOT flag:trashed AND NOT list:ports-changes.openbsd.org AND NOT list:source-changes.openbsd.org"
                   :key ?u)
-                ,(make-mu4e-bookmark
-                  :name  "Today's messages"
+                ( :name  "Today's messages"
                   :query (concat
                           "date:today..now"
                           " AND NOT flag:trashed"
                           " AND NOT list:ports-changes.openbsd.org"
                           " AND NOT list:source-changes.openbsd.org")
                   :key ?d)
-                ,(make-mu4e-bookmark
-                  :name  "Last 7 days"
+                ( :name  "Last 7 days"
                   :query (concat
                           "date:6d..now"
                           " AND NOT flag:trashed"
                           " AND NOT list:ports-changes.openbsd.org"
                           " AND NOT list:source-changes.openbsd.org")
                   :key ?w)
-                ,(make-mu4e-bookmark
-                  :name  "Hackers"
+                ( :name  "Hackers"
                   :query "list:hackers.openbsd.org AND NOT flag:trashed"
                   :key ?h)
-                ,(make-mu4e-bookmark
-                  :name   "Bugs"
+                ( :name   "Bugs"
                   :query  "list:bugs.openbsd.org AND NOT flag:trashed"
                   :key ?b)
-                ,(make-mu4e-bookmark
-                  :name  "Tech"
+                ( :name  "Tech"
                   :query "list:tech.openbsd.org AND NOT flag:trashed"
                   :key ?t)
-                ,(make-mu4e-bookmark
-                  :name  "Ports"
+                ( :name  "Ports"
                   :query "list:ports.openbsd.org AND NOT flag:trashed"
                   :key ?p)
-                ,(make-mu4e-bookmark
-                  :name "Misc"
+                ( :name "Misc"
                   :query "list:misc.openbsd.org AND NOT flag:trashed"
                   :key ?m)
-                ,(make-mu4e-bookmark
-                  :name "9front"
+                ( :name "9front"
                   :query "list:9front.9front.org AND NOT flag:trashed"
                   :key ?9)
-                ,(make-mu4e-bookmark
-                  :name "GOT"
+                ( :name "GOT"
                   :query "list:gameoftrees.openbsd.org AND NOT flag:trashed"
                   :key ?g)))))
 #+end_src

@@ -10,10 +10,6 @@ set -A my_paths -- \
 
 paths "${my_paths[@]}"
 
-mv ~/.cache ~/.tcache && \
-	mkdir ~/.cache
-rm -rf ~/.tcache &
-
 mv ~/Downloads ~/.tdownloads && \
 	mkdir ~/Downloads
 rm -rf ~/.tdownloads &

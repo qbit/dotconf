@@ -3,7 +3,7 @@ BROWSER=$(which xdg-open 2>/dev/null)
 OHMYKSH_DIR=${HOME}/src/ohmyksh
 OHMYPATCHES=~/patches
 
-PKG_PATH="$(cat /etc/installurl)/snapshots/packages/%a"
+PKG_PATH="$(head -n1 /etc/installurl)/snapshots/packages/%a"
 
 export GOT_AUTHOR BROWSER OHMYKSH_DIR OHMYPATCHES PKG_PATH
 

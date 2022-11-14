@@ -99,7 +99,7 @@ AddToMenu IDEMenu  "IDEs"  Title
 +       "IntelliJ"		exec /usr/local/bin/intellij
 
 AddToMenu RootMenu	"Root Menu"	Title
-+			"XTerm"				Exec exec xterm
++			"XTerm"				Exec exec /usr/X11R6/bin/xterm
 +			"Browser"			Exec exec chrome
 +			"Emacs"				Exec exec /usr/local/bin/emacs
 +			""		Nop
