@@ -23,7 +23,7 @@ load_extension fzf
 load_extension k
 load_extension nocolor
 load_extension openbsd
-which keychain 2>&1 > /dev/null && load_extension keychain
+which keychain >/dev/null 2>&1 && load_extension keychain
 load_extension pkgup
 
 load_completion ssh
