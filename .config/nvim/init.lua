@@ -59,7 +59,7 @@ cmd("match OverLength /\\%79v.\\+/")
 cmd("set dir=~/.swaps")
 cmd("set nolist")
 cmd("set ruler")
-cmd("set mouse-=a")
+cmd("set mouse=")
 
 o.hlsearch = true;
 
