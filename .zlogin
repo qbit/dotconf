@@ -37,8 +37,8 @@ MYNAME=$(uname -n)
 [[ -f ~/.keychain/${MYNAME}-sh ]] && . ~/.keychain/${MYNAME}-sh
 [[ -f ~/.keychain/${MYNAME}-sh-gpg  ]] && . ~/.keychain/${MYNAME}-sh-gpg
 
-precmd_vcs_info() { vcs_info }
-precmd_functions+=( precmd_vcs_info )
+#precmd_vcs_info() { vcs_info }
+#precmd_functions+=( precmd_vcs_info )
 
 setopt prompt_subst
 
@@ -76,3 +76,5 @@ alias sbcl="rlwrap sbcl"
 alias yaegi="rlwrap yaegi"
 alias tmux="tmux -2"
 alias dotconf="$(which git) --git-dir=$HOME/.dotconf --work-tree=$HOME"
+
+eval "$(direnv hook zsh)"
