@@ -13,15 +13,15 @@ rofi.color-urgent: #fdf6e3, #dc322f, #eee8d5, #dc322f, #fdf6e3
 
 ssh-askpass*font:			-adobe-helvetica-medium-r-normal--18-180-75-75-p-98-iso8859-1
 ssh-askpass*foreground:			black
-ssh-askpass*background:			#ffffea
+!ssh-askpass*background:			#ffffea
 ssh-askpass.*.borderWidth:		1
 ssh-askpass.*.borderColor:		black
 ssh-askpass.*.shadowThickness:		0
 ssh-askpass.*Button.borderWidth:	0
-ssh-askpass.*Button.background:		#fdf6e3
+!ssh-askpass.*Button.background:		#fdf6e3
 ssh-askpass.indicator.borderWidth:	0
-ssh-askpass.indicator.background:	#fdf6e3
-ssh-askpass.indicator.foreground:	#dedeff
+!ssh-askpass.indicator.background:	#fdf6e3
+!ssh-askpass.indicator.foreground:	#dedeff
 
 XLock.startCmd:		ssh-add -D; /usr/local/bin/rbw lock; /usr/local/bin/sudo -K
 XLock.dpmsoff:		15
