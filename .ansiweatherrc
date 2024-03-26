@@ -1,6 +1,8 @@
 location:Pueblo, CO
 fetch_cmd:ftp -V -o -
 units:metric
-show_daylight:true
+show_daylight:false
+show_pressure:false
+show_wind:false
 ansi:false
 symbols:true
