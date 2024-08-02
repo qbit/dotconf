@@ -2,7 +2,6 @@
 
 import qualified Data.Map as M
 import Data.Monoid
-import System.OpenBSD.Process (pledge)
 import XMonad
 import XMonad.Actions.CycleWS
 import XMonad.Hooks.EwmhDesktops
@@ -33,7 +32,6 @@ instance UrgencyHook LibNotifyUrgencyHook where
 
 main :: IO ()
 main = do
-  _ <- pledge (Just "stdio rpath wpath cpath proc exec unix") Nothing
   xmonad $
     ewmh $
     withUrgencyHook LibNotifyUrgencyHook $
@@ -42,7 +40,7 @@ main = do
       , focusedBorderColor = "#ccc"
       , focusFollowsMouse = False
       , clickJustFocuses = False
-      , terminal = "xfce4-terminal"
+      , terminal = "xterm"
       , workspaces = myWorkspaces
       , startupHook = myStartupHook
       , layoutHook = myLayoutHook
@@ -114,10 +112,9 @@ myManageHook =
 
 myStartupHook :: X ()
 myStartupHook = do
-  spawn "pkill polybar; polybar tal"
+  spawn "pkill polybar; polybar chunk"
   spawn "feh --bg-fill ~/.background.jpg"
-  spawnOnce "xfce4-terminal"
-  spawnOnce "xfce4-terminal"
-  --spawnOnce "chrome"
+  spawnOnce "xterm"
+  spawnOnce "firefox"
   --spawnOnce "emacs"
   --spawnOnce "nheko"
