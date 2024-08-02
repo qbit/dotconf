@@ -64,7 +64,6 @@ case "$wmanager" in
 				*"boolean true"*)
 					echo "Locked - clearing keys"
 					/usr/bin/ssh-add -D;
-					/usr/local/bin/rbw lock;
 					/usr/local/bin/sudo -K
 					;;
 			esac
