@@ -49,10 +49,11 @@ case "$wmanager" in
 		xsetroot -solid black
 		;;
 	/usr/X11R6/bin/cwm|/usr/local/bin/spectrwm)
-		while true; do ~/bin/bar; sleep 3; done | lemonbar-xft -d \
-			-f "$Go Mono:pixelsize=12" \
-			-B "#FFFFEA" \
-			-F "#000000" | sh &
+		#while true; do ~/bin/bar; sleep 3; done | lemonbar-xft -d \
+		#	-f "$Go Mono:pixelsize=12" \
+		#	-B "#FFFFEA" \
+		#	-F "#000000" | sh &
+		/usr/local/bin/polybar "$(hostname -s)" &
 		xidle -delay 5 -program "/usr/X11R6/bin/xlock" -timeout $TIMEOUT &
 		/usr/X11R6/bin/xcompmgr &
 		;;

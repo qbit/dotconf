@@ -1,10 +1,11 @@
 sticky yes
-gap 18 1 1 1
+gap 20 1 1 1
 snapdist 10
 
 ignore dock
 ignore menu
 ignore panel
+ignore polybar
 
 fontname "Go Regular:pixelsize=13"
 
@@ -16,7 +17,7 @@ fontname "Go Regular:pixelsize=13"
 #color menufg		"#dedeff"
 #color urgencyborder	"red"
 
-borderwidth		5
+borderwidth		2
 color activeborder	"#FFAEAE"
 color inactiveborder	"#AEAEAE"
 color menubg		"#EAFFFF"
