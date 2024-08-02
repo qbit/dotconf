@@ -1,4 +1,4 @@
-cvs -q -danoncvs@obsdacvs.cs.toronto.edu:/cvs
+cvs -q -danoncvs@anoncvs.usa.openbsd.org:/cvs
 diff -upN
 update -Pd
 checkout -P
