@@ -79,6 +79,27 @@ case "$wmanager" in
 	/usr/X11R6/bin/fvwm)
 		echo "fvwm init from InitFunction"
 		;;
+	/usr/local/bin/startplasma-x11)
+		export XDG_RUNTIME_DIR=/tmp/run/$(id -u)
+		if [ ! -d $XDG_RUNTIME_DIR ]; then
+		    mkdir -m 700 -p $XDG_RUNTIME_DIR
+		fi
+
+		export QT_FORCE_STDERR_LOGGING=1
+		export XDG_CURRENT_DESKTOP=KDE
+		export DESKTOP_SESSION=plasma
+		export QT_FORCE_STDERR_LOGGING=1
+		dbus-monitor --session "type='signal',interface='org.xfce.ScreenSaver'" | \
+		while read x; do
+			case "$x" in
+				*"boolean true"*)
+					echo "Locked - clearing keys"
+					/usr/bin/ssh-add -D;
+					/usr/local/bin/sudo -K
+					;;
+			esac
+		done &
+		;;
 esac
 
 
