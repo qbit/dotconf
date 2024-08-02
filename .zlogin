@@ -76,5 +76,6 @@ alias sbcl="rlwrap sbcl"
 alias yaegi="rlwrap yaegi"
 alias tmux="tmux -2"
 alias dotconf="$(which git) --git-dir=$HOME/.dotconf --work-tree=$HOME"
+alias ocvs='cvs -dabieber@cvs.openbsd.org:/cvs'
 
 eval "$(direnv hook zsh)"
