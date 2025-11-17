@@ -1,67 +1,120 @@
+:PROPERTIES:
+:ID:       b9359672-0126-4fcd-a3bf-8b0c0dcd4d73
+:END:
+#+PROPERTY: header-args:emacs-lisp :tangle yes
 #+TITLE: Emacs Configuration
+* Extra Functionality
+:PROPERTIES:
+:ID:       2dc993e7-cb89-4ba8-a418-b51464807b6e
+:END:
+
+** op commandline integration
+:PROPERTIES:
+:ID:       77e5b779-e31e-4b1c-a864-76f2c4c1a8d0
+:END:
+
+#+begin_src emacs-lisp
+(require 'auth-source)
+
+(defgroup auth-source-op nil
+  "op (1password command line tool) auth source."
+  :group 'auth-source
+  :tag "auth-source-op"
+  :prefix "op-")
+
+(defcustom auth-source-op-executable "op"
+  "op executable to use."
+  :type 'string
+  :group 'auth-source-op)
+
+(cl-defun auth-source-op-search (&rest spec
+                                       &key _backend _type host _user _port
+                                       &allow-other-keys)
+  "query 1password using the op command"
+  (if (executable-find auth-source-op-executable)
+      ;; TODO: handle errors :P
+      (let* ((op-result (string-trim
+			 (shell-command-to-string
+			  (format "%s item get %s --fields label=username,label=password --reveal --format json"
+				  auth-source-op-executable
+				  host))))
+	     (result (json-parse-string op-result :object-type 'alist :array-type 'list))
+	     (user (cdr (assoc 'value (nth 0 result))))
+	     (secret (cdr (assoc 'value (nth 1 result)))))
+	(list (list :user user
+		    :secret secret)))
+    (warn "`auth-source-op': Couldn't find 'op' executable")))
+
+(defun auth-source-op-enable ()
+  "Enable the op auth source."
+  (add-to-list 'auth-sources 'op)
+  (auth-source-forget-all-cached))
+
+(defvar auth-source-op-backend
+  (auth-source-backend
+   :source "."
+   :type 'password-store
+   :search-function #'auth-source-op-search))
+
+(defun auth-source-op-backend-parse (entry)
+  (when (eq entry 'op)
+    (auth-source-backend-parse-parameters entry auth-source-op-backend)))
+
+(if (boundp 'auth-source-backend-parser-functions)
+    (add-hook 'auth-source-backend-parser-functions #'auth-source-op-backend-parse)
+  (advice-add 'auth-source-backend-parse :before-until #'auth-source-op-backend-parse))
+
+(provide 'auth-source-op)
+#+end_src
+
 * Literate emacs configuration
+:PROPERTIES:
+:ID:       63e8f578-4726-47ea-84ee-31146bad6fd2
+:END:
 
 I can never rembember what various configs do. Jumping on this literate emacs
 config to see if it helps!
 
-** Set some ENV vars
+** Instance Specific
+:PROPERTIES:
+:ID:       2b0c380e-411a-4c7a-b4a9-892b0f5f3742
+:END:
 
-These are needed to make emacs aware of various things (like Go binaries,
-etc). I have them here because sometimes when emacs is launched from ~rofi~
-or similar it doesn't have the same ENV as it does when launching from the
-shell.
+Sometimes I need to execute some other things on different machines. This lets
+me include an extra file to extend things a bit.
 
 #+begin_src emacs-lisp
-  (defun expand-if-exists (d)
-    ;; expand-if-exists(d) expands d only if d exists
-    (if (file-exists-p d)
-        (expand-file-name d)))
-
-  (let ((paths
-         '(
-           "/usr/local/bin"
-           "/usr/local/go/bin"
-           "/usr/local/MacGPG2/bin"
-           "/Library/TeX/texbin"
-           "/usr/local/jdk-11/bin"
-           "/usr/ports/infrastructure/bin"
-           "~/bin"
-           "~/.nix-profile/bin"
-           "~/go/bin"
-           "~/opt/bin"
-           "/usr/local/plan9/bin"
-           )))
-
-    (setenv "PATH" (concat (getenv "PATH") (mapconcat 'expand-if-exists (remove nil paths) ":")))
-    (setq exec-path (append exec-path (remove "" (split-string (getenv "PATH") ":")))))
+  (if (file-exists-p "~/.emacs.d/xin-custom.el")
+      (progn
+        (load "~/.emacs.d/xin-custom.el")))
 #+end_src
 
 ** Start the emacs server
+:PROPERTIES:
+:ID:       fd3e2824-e62c-4812-9919-6b7ed9af0942
+:END:
 
 Starting as a server lets me connect externally to do things like change
 themes, save buffers via cron and other such dumbary!
 
 #+begin_src emacs-lisp
+(require 'bind-key)
 (load "server")
 (unless (server-running-p) (server-start))
 #+end_src
 
-** OpenBSD Lockups
-
-For some reason OpenBSD hangs, these seem to help a bit
-#+begin_src emacs-lisp
-(setq x-select-enable-clipboard-manager nil)
-(setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
-(setf x-selection-timeout 500)
-#+end_src
-
 ** Interface and Behavior
+:PROPERTIES:
+:ID:       c3ba44d8-5c91-454f-98bf-803290f5e2a1
+:END:
 *** Interface
+:PROPERTIES:
+:ID:       7ba540d9-275f-4267-9d86-46db134d2c01
+:END:
 
 Global font
 #+begin_src emacs-lisp
-  ;; This is currently set in ~/.Xresources - for some reason emacs doesn't like the line below
-  ;;(set-default-font "Go Regular")
+  (set-frame-font "Go Mono 11")
 #+end_src
 
 Use 80 columns, this helps keep things readable when windows are split
@@ -76,17 +129,10 @@ I know I am in emacs, don't need to see the startup screen.
 (setq inhibit-startup-screen t)
 #+end_src
 
-If we are on OpenBSD, fill the scratch buffer with fortune \o/.
-
-#+begin_src emacs-lisp
-(if (file-executable-p "/usr/games/fortune")
-    (setq initial-scratch-message
-	  (concat
-	   (shell-command-to-string "fortune | sed -e 's/^/;; /g'")
-	   "\n\n")))
-#+end_src
-
 **** Use UTF8 where ever possible
+:PROPERTIES:
+:ID:       84a57366-d670-4656-a65b-bb65d0aafd4c
+:END:
 #+begin_src emacs-lisp
 (prefer-coding-system 'utf-8)
 (set-default-coding-systems 'utf-8)
@@ -95,6 +141,9 @@ If we are on OpenBSD, fill the scratch buffer with fortune \o/.
 #+end_src
 
 **** Change various UI bits
+:PROPERTIES:
+:ID:       87e81f85-c239-4381-ba8f-36fbeba9f32f
+:END:
 #+begin_src emacs-lisp
 (tool-bar-mode -1)
 (menu-bar-mode -1)
@@ -103,29 +152,119 @@ If we are on OpenBSD, fill the scratch buffer with fortune \o/.
 (global-font-lock-mode 1)
 #+end_src
 
-**** No GNU ls here
+**** direnv
+:PROPERTIES:
+:ID:       dfde4ab6-2bfd-4fa1-8e2f-f943dce10c0e
+:END:
+
 #+begin_src emacs-lisp
-  (setq ls-lisp-use-insert-directory-program nil)
-  (require 'ls-lisp)
+  (use-package direnv
+    :config
+    (direnv-mode))
+#+end_src
+
+**** project.el
+:PROPERTIES:
+:ID:       194d6c86-cb31-4563-820c-efbf72853313
+:END:
+
+#+begin_src emacs-lisp
+  (setq project-list-file (expand-file-name "~/.emacs.d/projects"))
+#+end_src
+
+**** transient
+:PROPERTIES:
+:ID:       fff55527-096f-41bd-8aa2-535c089aa06d
+:END:
+
+#+begin_src emacs-lisp
+  (setq transient-history-file (expand-file-name "~/.emacs.d/transient"))
+#+end_src
+
+**** eww
+:PROPERTIES:
+:ID:       7a31ea70-4a38-444f-9fbc-e72330d293a9
+:END:
+
+[2025-04-02 Wed] Since switching to rcirc and elfeed.. it's nice to be able to
+view links directly in emacs. This sets the default to be eww.. I can use ~&~ to
+open in the external browser.
+
+#+begin_src emacs-lisp
+  (setq browse-url-browser-function 'eww-browse-url)
+#+end_src
+
+**** scrolly scroll scroll
+:PROPERTIES:
+:ID:       2daea08b-1cba-4bc8-96ec-0c590f2cf690
+:END:
+
+#+begin_src emacs-lisp
+  (pixel-scroll-precision-mode)
+#+end_src
+
+
+**** wayland copy / paste issues
+:PROPERTIES:
+:ID:       a17c42f7-e91c-4fb8-9491-88c97d55a0e1
+:END:
+
+[2025-04-18 Fri] it seems I have recently started having issues with wayland and
+copy / paste. It works initially - but after some time the buffers diverge.
+
+The [[https://www.emacswiki.org/emacs/CopyAndPaste#h5o-4][wiki]] has some info on using ~wl-clipboard~ to fix things.
+
+[2025-08-12 Tue] Update to the what the latest wiki has.. if this doesn't work I
+will try setting ~save-interprogram-paste-before-kill~.
+
+#+begin_src emacs-lisp
+  (setopt select-active-regions nil)
+  (setopt select-enable-clipboard 't)
+  (setopt select-enable-primary nil)
+  (setopt interprogram-cut-function #'gui-select-text)
+#+end_src
+
+*** Common functionality
+:PROPERTIES:
+:ID:       837a6def-b743-40f0-8753-9b16bd8416d5
+:END:
+
+#+begin_src emacs-lisp
+  (defun xin/no-check ()
+    (interactive)
+    (setenv "SKIP_CHECK" "1"))
 #+end_src
 
 *** Behavior
+:PROPERTIES:
+:ID:       9100298b-44d4-4ddc-9d32-b4ce3a04a134
+:END:
 
 Switch various defaults to be more comfortable for myself.
 
 #+begin_src emacs-lisp
-(fset 'yes-or-no-p 'y-or-n-p)
-(show-paren-mode t)
-(desktop-save-mode)
-(setq backup-directory-alist '(("." . "~/.emacs-saves")))
-(setq auto-mode-alist
-      (append
-       (list
-	'("\\.gpg$" . sensitive-minor-mode)
-	)
-       auto-mode-alist))
-(setq auth-sources
-      '((:source "~/.netrc")))
+  (fset 'yes-or-no-p 'y-or-n-p)
+  (show-paren-mode t)
+
+  (setq desktop-dirname             "~/.emacs.d/"
+        desktop-base-file-name      "emacs.desktop"
+        desktop-base-lock-name      "lock"
+        desktop-path                (list desktop-dirname)
+        desktop-save                t
+        desktop-files-not-to-save   "^$" ;reload tramp paths
+        desktop-load-locked-desktop nil
+        desktop-auto-save-timeout   30)
+  (desktop-save-mode 1)
+
+  (setq backup-directory-alist '(("." . "~/.emacs-saves")))
+  (setq auto-mode-alist
+        (append
+         (list
+          '("\\.gpg$" . sensitive-minor-mode)
+          )
+         auto-mode-alist))
+  (setq auth-sources
+        '("/run/secrets/netrc"))
 #+end_src
 
 Use spelling and auto-fill when we are in text mode.
@@ -136,33 +275,17 @@ Use spelling and auto-fill when we are in text mode.
 			    (turn-on-flyspell)))
 #+end_src
 
-This fixes some tramp "waiting for prompt" errors.
 #+begin_src emacs-lisp
-  ;;(setq trarmp-shell-prompt-pattern "\\(?:^\\|\r\\)[^]#$%>λ\n]*#?[]#$%>λ].* *\\(^[\\[[0-9;]*[a-zA-Z] *\\)*")
-  ;;(require 'tramp-sh nil t)
-  ;;(setf tramp-ssh-controlmaster-options
-  ;;      (concat
-  ;;       "-o ControlPath=/tmp/ssh-%%r@%%h:%%p "
-  ;;       "-o ControlMaster=auto -o ControlPersist=yes"))
+  (setq eshell-history-file-name (expand-file-name "~/.emacs.d/eshell/history"))
+  (use-package eat
+    :config
+    (setq eat-kill-buffer-on-exit t)
+    (add-hook 'eshell-load-hook #'eat-eshell-mode))
 #+end_src
-
-If things _aren't_ working the way we want:
-
-#+begin_src emacs-lisp
-(setq tramp-verbose 6)
-#+end_src
-
-** Include ports site-lisp
-
-On OpenBSD various packages (mu, git.. etc) install elisp things into a global
-directory, this makes sure we include it.
-
-#+begin_src emacs-lisp
-(if (file-directory-p "/usr/local/share/emacs/site-lisp")
-    (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/"))
-#+end_src
-
 ** Unset custom-file
+:PROPERTIES:
+:ID:       9f381acd-3889-4808-b1c3-96b502c5cfb5
+:END:
 
 The customization file mostly just causes churn in the SCM so we disable it
 here.
@@ -170,18 +293,110 @@ here.
 (setq custom-file (make-temp-file ""))
 #+end_src
 
-** Ensure packages are pinned and installed
+* Packages
+:PROPERTIES:
+:ID:       ab08313d-8258-478b-ba7c-f131dc7f56a7
+:END:
 
-This makes sure ~use-package~ installs things (and makes it so we don't need
-~:ensure t~ set for every package.
+** package-lint
+:PROPERTIES:
+:ID:       774dca4a-5cb3-4264-806b-8e3fb3ac8671
+:END:
 
 #+begin_src emacs-lisp
-(setq use-package-always-ensure t)
-;;(setq use-package-always-pin "melpa-stable")
+  (use-package package-lint)
 #+end_src
 
-* Packages
+** ob-mermaid
+:PROPERTIES:
+:ID:       867fa1c6-ce4d-4f1e-a60d-4e99c885cd91
+:END:
+
+#+begin_src emacs-lisp
+  (use-package ob-mermaid)
+  (use-package mermaid-mode)
+#+end_src
+
+** yaml
+:PROPERTIES:
+:ID:       0ea42ef6-f505-4ec5-af59-db8556920f48
+:END:
+
+#+begin_src emacs-lisp
+  (use-package yaml-mode)
+#+end_src
+
+** rust-mode
+:PROPERTIES:
+:ID:       002b3f67-4bbb-40c3-9bc3-1ca9c809b094
+:END:
+#+begin_src emacs-lisp
+  (use-package rust-mode)
+#+end_src
+
+** uxntal
+:PROPERTIES:
+:ID:       05ac40fb-f95d-45d0-82b0-a94367653bd9
+:END:
+
+#+begin_src emacs-lisp
+  (use-package uxntal-mode)
+#+end_src
+
+** breadcrumb
+:PROPERTIES:
+:ID:       a271e79c-010a-4418-a12d-e7d65c14e085
+:END:
+
+Handy breadcrumbs for seeing where things are in the LSP.
+
+#+begin_src emacs-lisp
+  (use-package breadcrumb)
+#+end_src
+
+** web-mode
+:PROPERTIES:
+:ID:       96f95d47-78fb-4fa2-88e1-c9e998b163c1
+:END:
+
+#+begin_src emacs-lisp
+  (use-package web-mode
+    :config
+    (setq web-mode-markup-indent-offset 2)
+    (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.php?\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.ts?\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.js?\\'" . web-mode)))
+#+end_src
+
+** scpaste
+:PROPERTIES:
+:ID:       cb5d91f6-352e-48cf-8304-3cc47c857977
+:END:
+
+Post pastes to https://paste.suah.dev
+
+#+begin_src emacs-lisp
+  (use-package scpaste
+    :config (setq scpaste-scp-destination "suah.dev:/var/www/paste"
+  		scpaste-http-destination "https://paste.suah.dev"))
+#+end_src
+
+** htmlize
+:PROPERTIES:
+:ID:       0975c7dc-bdd1-4358-8a35-65ce1354b3f7
+:END:
+
+This is needed for publishing org stuff
+
+#+begin_src emacs-lisp
+  (use-package htmlize)
+#+end_src
+
 ** parchment-theme
+:PROPERTIES:
+:ID:       75dc99d8-4790-47e2-8a91-7e497406de6c
+:END:
 This is a nice theme that resembles acme in plan9. Minimal.
 
 #+begin_src emacs-lisp
@@ -189,19 +404,10 @@ This is a nice theme that resembles acme in plan9. Minimal.
   :config (load-theme 'parchment t))
 #+end_src
 
-** keychain-environment
-
-I make heavy use of ~ssh-agent~ this lets emacs pickup / use the existing
-agents I have running.
-
-#+begin_src emacs-lisp
-(use-package keychain-environment
-  ;;:pin "melpa"
-  :init
-  (keychain-refresh-environment))
-#+end_src
-
 ** ivy
+:PROPERTIES:
+:ID:       587ef327-b68d-423b-842c-3a14a12f07bf
+:END:
 
 ~ivy~ is fantastic. It gives me nice visual search for buffers,
 code.. etc. Combined with ~smex~ for sorting (shows last used things first) and
@@ -209,56 +415,77 @@ code.. etc. Combined with ~smex~ for sorting (shows last used things first) and
 
 #+begin_src emacs-lisp
   (use-package counsel)
+  (setq smex-save-file (expand-file-name "~/.emacs.d/smex.save"))
   (use-package smex)
   (use-package ivy
     :hook (after-init . ivy-mode)
     :bind
-    ("C-s"     . swiper)
+    ("C-s"     . swiper-isearch)
     ("M-x"     . counsel-M-x)
     ("C-x C-f" . counsel-find-file)
     ("C-x b"   . ivy-switch-buffer))
 #+end_src
 
 ** magit
+:PROPERTIES:
+:ID:       87a444d1-b786-4e2d-8a9d-8e5e43c63206
+:END:
 
 Magit is a awesome. Not sure what else to say about it. :P
 
 #+begin_src emacs-lisp
-(use-package magit
-  :bind ("C-c m" . magit-status)
-  :init
-  (setq magit-completing-read-function 'ivy-completing-read))
+  (use-package magit
+    :bind ("C-c m" . magit-status)
+    :init
+    (setq magit-completing-read-function 'ivy-completing-read))
+
+  (use-package forge
+    :after magit)
 #+end_src
 
-** flycheck
+** lsp
+:PROPERTIES:
+:ID:       7619e01c-121b-497e-8b43-5f548626cfc6
+:END:
 
-~flycheck~ does automatic syntax checking for most things
-
-#+begin_src emacs-lisp
-(use-package flycheck
-  :init (global-flycheck-mode))
-#+end_src
-
-- [2020-05-29 Fri] Unfortunately it clobbers the "C-c !" prefix, so we need
-  to add this to get it back:
+Use ~eglot~ for lsp stuff. It's built in and shows a bit more information for
+auto-completion stuff.
 
 #+begin_src emacs-lisp
-(define-key flycheck-mode-map (kbd "C-c !") 'org-time-stamp-inactive)
-#+end_src
+  (use-package paredit
+    :hook ((scheme-mode
+  	  elisp-mode
+            geiser-repl-mode
+        . paredit-mode)))
+  (use-package eglot
+    :config
+    (add-hook 'elm-mode-hook 'eglot-ensure)
+    (add-hook 'go-mode-hook 'eglot-ensure)
+    (add-hook 'haskell-mode-hook 'eglot-ensure)
+    (add-hook 'lua-mode 'eglot-ensure)
+    (add-hook 'nix-mode-hook 'eglot-ensure)
+    (add-hook 'perl-mode-hook 'eglot-ensure)
+    (add-hook 'ruby-mode-hook 'eglot-ensure)
+    (add-hook 'rust-mode-hook 'eglot-ensure)
+    (add-hook 'typescript-mode-hook 'eglot-ensure)
 
-** lsp-mode
+    (add-to-list 'eglot-server-programs '(c-mode    . ("clangd")))
+    (add-to-list 'eglot-server-programs '(c++-mode  . ("clangd")))
+    (add-to-list 'eglot-server-programs '(rust-mode . ("rust-analyzer")))
 
-~lsp-mode~ supports language servers for various things. I pretty much only
-care about Go and Ruby.
+    (define-key eglot-mode-map (kbd "C-c r") 'eglot-rename)
+    (define-key eglot-mode-map (kbd "C-c f") 'eglot-format)
 
-#+begin_src emacs-lisp
-  (use-package lsp-mode
-    :hook ((go-mode    . lsp-deferred)
-           (ruby-mode  . lsp))
-    :commands (lsp lsp-deferred))
+    :hook
+    (eglot-managed-mode . (lambda()
+  			  (add-hook 'before-save-hook 'eglot-format-buffer nil 'local)
+  			  (flyspell-prog-mode))))
 #+end_src
 
 ** company and friends
+:PROPERTIES:
+:ID:       7327dc57-0f1d-4cff-80c3-fac203aa2626
+:END:
 
 ~company~ allows for auto-completion of various things. It can interface with ~lsp-mode~ to complete
 things like Go.
@@ -274,25 +501,25 @@ things like Go.
 #+end_src
 
 ** gitgutter
+:PROPERTIES:
+:ID:       bd3213fa-acb4-49ef-8f8a-a7710ce4984a
+:END:
 This gives me a nice in-ui way to see modifications and what not.
 
 #+begin_src emacs-lisp
-(use-package git-gutter
-  :hook
-  (after-init . global-git-gutter-mode))
-#+end_src
-
-** nix
-
-Add support for nix files. I don't use nix much atm, but it was recently
-ported to OpenBSD, so I am hopeful I can start using it there more!
-
-#+begin_src emacs-lisp
-(use-package nix-mode
-  :mode "\\.nix\\'")
+  (use-package git-gutter
+    :hook
+    (after-init . global-git-gutter-mode)
+    :config
+    (global-set-key (kbd "C-x g r") 'git-gutter:revert-hunk)
+    (global-set-key (kbd "C-x g p") 'git-gutter:previous-hunk)
+    (global-set-key (kbd "C-x g n") 'git-gutter:next-hunk))
 #+end_src
 
 ** shell
+:PROPERTIES:
+:ID:       45907b9c-125c-4c73-ac4c-2bb2c199a76a
+:END:
 
 I don't often use the shell from emacs, but when I do these bits make it
 easier for me to treat it like a regular shell.
@@ -304,1036 +531,421 @@ easier for me to treat it like a regular shell.
     (kill-buffer))
 #+end_src
 
-** pinboard
 
-A pinboard.in client
-
+vterm is handy for running things that spit out a lot of escape codes (nom.. etc)
 #+begin_src emacs-lisp
-(use-package pinboard)
+  (use-package vterm)
 #+end_src
 
-** restclient
+* Language Configurations
+:PROPERTIES:
+:ID:       4d31b983-3fd6-408f-9488-b2215c005c63
+:END:
+
+** Forth
+:PROPERTIES:
+:ID:       75ab5012-b901-43ca-aaac-421ff542763c
+:END:
 
 #+begin_src emacs-lisp
-(use-package restclient
-  ;;:pin "melpa"
-  :mode (("\\.http$" . restclient-mode)))
+  (use-package forth-mode)
 #+end_src
 
-** sr-speedbar
-
-Speedbar is almost perfect.. If it only ran in the current frame!! :D
-
-**** Enter sr-speedbar
-#+begin_src emacs-lisp
-;;; sr-speedbar.el --- Same frame speedbar
-
-;; Author: Sebastian Rose <sebastian_rose@gmx.de>
-;; Maintainer: Sebastian Rose <sebastian_rose@gmx.de>
-;;             Peter Lunicks <plunix@users.sourceforge.net>
-;; Copyright (C) 2008, 2009, Sebastian Rose, all rights reserved.
-;; Copyright (C) 2008, 2009, Andy Stewart, all rights reserved.
-;; Copyright (C) 2009, Peter Lunicks, all rights reversed.
-;; Created: 2008
-;; Version: 20200616
-;; X-Original-Version: 0.1.10
-;; Last-Updated: 2020-06-16
-;; URL: http://www.emacswiki.org/emacs/download/sr-speedbar.el
-;; Keywords: speedbar, sr-speedbar.el
-;; Compatibility: GNU Emacs 22 ~ GNU Emacs 25
-;;
-;; Features required by this library:
-;;
-;;  `speedbar' `advice' `cl'
-;;
-
-;;; This file is NOT part of GNU Emacs
-
-;;; License
-;;
-;; This program is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 3, or (at your option)
-;; any later version.
-
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-
-;; You should have received a copy of the GNU General Public License
-;; along with this program; see the file COPYING.  If not, write to
-;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth
-;; Floor, Boston, MA 02110-1301, USA.
-
-;;; Commentary:
-;;
-;; The sr-speedbar.el was created just because I could not believe what I
-;; read on http://www.emacswiki.org/cgi-bin/wiki/Speedbar.  They wrote there
-;; that it is not possible to show the speedbar in the same frame.  But, as
-;; we all know, ecb had this already.  So I started as some kind of joke :)
-;; But when I found it useful and use it all the time.
-;;
-;; Now you type windows key with 's' (`s-s' in Emacs) will show the speedbar
-;; in an extra window, same frame.  You can customize the initial width of the
-;; speedbar window.
-;;
-;; Below are commands you can use:
-;;
-;; `sr-speedbar-open'                   Open `sr-speedbar' window.
-;; `sr-speedbar-close'                  Close `sr-speedbar' window.
-;; `sr-speedbar-toggle'                 Toggle `sr-speedbar' window.
-;; `sr-speedbar-select-window'          Select `sr-speedbar' window.
-;; `sr-speedbar-refresh-turn-on'        Turn on refresh speedbar content.
-;; `sr-speedbar-refresh-turn-off'       Turn off refresh speedbar content.
-;; `sr-speedbar-refresh-toggle'         Toggle refresh speedbar content.
-;;
-;; Enjoy! ;)
-;;
-
-;;; Installation:
-;;
-;; Copy sr-speedbar.el to your load-path and add to your ~/.emacs
-;;
-;;  (require 'sr-speedbar)
-;;  (global-set-key (kbd "s-s") 'sr-speedbar-toggle)
-;;
-;; ... or any key binding you like.
-;;
-
-;;; Customize:
-;;
-;;      M-x customize-group RET sr-speedbar RET
-
-;;; Change log:
-;; * 07 Jan 2021:
-;;   * Jacob First <jacob.first@member.fsf.org>
-;;     * Fix inconsistent window selection when opening speedbar on the right side vs. on the left.
-;;
-;; * 16 Jun 2020:
-;;   * Bo Yao <icerove@gmail.com> (submitted by him on 16 Jul 2018 to the Emacs Orphanage mirror version at GitHub)
-;;      * Always open file in most recently selected window (the one before switching to
-;;        sr-speedbar).
-;;
-;; * 25 Oct 2016:
-;;   * Hong Xu <hong@topbug.net>
-;;      * Fix compilation warning when `helm-alive-p' is not defined.
-;;
-;; * 04 Aug 2015:
-;;   * Tamas Levai <levait@tmit.bme.hu>:
-;;      * fix compilation warnings
-;;
-;; * 15 Sep 2014:
-;;   * Tu, Do Hoang <tuhdo1710@gmail.com>
-;;      * define `sr-speedbar-handle-other-window-advice' and `ad-advised-definition-p'
-;;      before defining `sr-speedbar-skip-other-window-p'. Othewise, `sr-speedbar'
-;;      fails to load at this stage.
-;;
-;;      * Do not used advised `pop-to-buffer' when helm window is
-;;      alive. Otherwise another horizontal buffer is created inside
-;;      Helm buffer.
-;;
-;;   * Uwe Koloska <kolewu@koloro.de>
-;;      * define `ad-advised-definition-p' only if it's not defined
-;;        fixes an error on Emacs 24.3 where `macrop' ist still named
-;;        `ad-macro-p'
-;;
-;; * 03 Aug 2014:
-;;   * Reuben Thomas <rrt@sc3d.org>:
-;;      * Reduce to a single width preference, and make it work properly on
-;;        startup.
-;;      * Miscellaneous tidying of documentation and comments.
-;;      * Remove version constant; should be using the package header, and it
-;;        was already way out of date.
-;;
-;; * 08 Jun 2014:
-;;   * Gregor Zattler:
-;;      * test if symbol `ad-advised-definition-p' is defined,
-;;        since Christian Brassats version test failed on emacs
-;;        23.3.91.1
-;;
-;; * 05 May 2014:
-;;   * Christian Brassat:
-;;      * `ad-advised-definition-p' is not supported since Emacs 24.4.
-;;
-;; * 09 Mar 2013:
-;;   * Tharre:
-;;      * Remove Emacs 21 compatibility code as it fails to compile on Emacs 24.
-;;
-;; * 20 July 2009:
-;;   * Peter Lunicks:
-;;      * Add new option `sr-speedbar-right-side' to control which
-;;        side of the frame the speedbar appears on.
-;;
-;; * 18 Feb 2009:
-;;   * Andy Stewart:
-;;      * Fix bug between ECB and `sr-speedbar-close'.
-;;
-;; * 29 Jan 2009:
-;;   * Andy Stewart:
-;;      * Fix doc.
-;;
-;; * 13 Jan 2009:
-;;   * Andy Stewart:
-;;      * Use `emacs-major-version' instead comment for Emacs 21 compatibility.
-;;      * Rewrite advice for `pop-to-buffer' to avoid `pop-to-buffer' not effect
-;;        when have many dedicated window in current frame.
-;;      * Rewrite advice for `delete-other-windows' to avoid use common variable
-;;        `delete-protected-window-list' and use `window-dedicated-p' instead.
-;;        Remove variable `delete-protected-window-list' and function
-;;        `sr-speedbar-dedicated-match-protected-window-p'.
-;;
-;; * 04 Jan 2009:
-;;   * Andy Stewart:
-;;      * Add new option `sr-speedbar-auto-refresh' control refresh content.
-;;      * Add new functions:
-;;        `sr-speedbar-refresh-turn-on',
-;;        `sr-speedbar-refresh-turn-off',
-;;        `sr-speedbar-refresh-toggle'.
-;;      * Fix doc.
-;;
-;; * 30 Dec 2008:
-;;   * Andy Stewart:
-;;      * Rewrite advice for `delete-other-windows' for fix the bug
-;;        with window configuration save and revert.
-;;      * Rewrite advice for `delete-window', now just remember window
-;;        width before deleted, and can use `delete-window' do same effect
-;;        as command `sr-speedbar-close'.
-;;      * Add new option `sr-speedbar-max-width'.
-;;        Remember window width before hide, except larger than value of
-;;        `sr-speedbar-max-width'.
-;;      * Add new variable `delete-protected-window-list', for protected
-;;        special window don't deleted.
-;;        This variable is common for any extension that use dedicated
-;;        window.
-;;      * Fix doc.
-;;
-;; * 29 Dec 2008:
-;;   * Andy Stewart:
-;;      * Pick-up and refactory code that use `buffer-live-p' or `window-live-p',
-;;        and replace with `sr-speedbar-buffer-exist-p' and
-;;        `sr-speedbar-window-exist-p'.
-;;      * Rename some function with prefix `sr-speedbar-' to avoid
-;;        conflict with other functions.
-;;      * Pick-up the code that handle advice for `other-window',
-;;        and replace with function `sr-speedbar-handle-other-window-advice'.
-;;      * Clean up code, make more clear.
-;;
-;; * 21 Dec 2008:
-;;   * Andy Stewart:
-;;      * Fix the bug `sr-speedbar-open' and `sr-speedbar-close'.
-;;      * Fix doc.
-;;
-;; * 20 Dec 2008
-;;   * Andy Stewart:
-;;      * Fix `ad-advised-definition-p' error.
-;;      * Fix doc.
-;;
-;; * 17 Dec 2008
-;;   * Andy Stewart:
-;;      * Add new option `sr-speedbar-skip-other-window-p' and new advice
-;;        for `other-window', make user skip select `sr-speedbar' window
-;;        when use command `other-window'.
-;;      * Fix the name of advice, make more clear.
-;;      * Fix the bug `sr-speedbar-select-window' when no live window exist.
-;;      * Fix doc.
-;;
-;; * 16 Dec 2008:
-;;   * Andy Stewart:
-;;      * Fix the bug of `sr-speedbar-refresh', use `default-directory'
-;;        get refresh directory instead through function in `dired'.
-;;      * Fix `window-live-p' bug, check window valid value before use
-;;        `window-live-p' test `sr-speedbar-window'.
-;;      * Fix `buffer-live-p' bug, check buffer valid value before use
-;;        `buffer-live-p' test `speedbar-buffer'.
-;;      * Add advice `pop-to-buffer' to make function `display-buffer'
-;;        can pop-up window when just have two windows (one is `sr-speedbar'
-;;        window) in current frame.
-;;      * Add group `sr-speedbar'.
-;;        More better customize interface through `customize-group'.
-;;
-;; * 28 Sep 2008:
-;;   * Andy Stewart:
-;;      * Fix a bug, when `sr-speedbar-toggle' many times, window width
-;;        will increment automatically.
-;;      * Use around advices replace, make code simple.
-;;      * Use `sr-speedbar-open' replace `sr-speedbar-no-separate-frame'.
-;;      * Clean up code.
-;;
-;; * 28 Sep 2008:
-;;   * Sebastian:
-;;      * set `sr-speedbar-delete-windows' to nil to avoid
-;;        the removal of other windows.
-;;
-;; * 26 Jun 2008:
-;;   * Sebastian:
-;;      * Added Andy Stewart's patch to refresh the speedbar's contents.
-;;        Thanks for this one!
-;;
-;; * Init:
-;;   * Sebastian:
-;;      * Added some lines to get it working:
-;;      * splitting the window and remember it,
-;;      * changing the way speedbar finds a file.
-;;      * File view of speedbar is now working all right.
-;;      * C-x 1 in other window deletes speedbar-window, just calling
-;;        M-x sr-speedbar-no-separate-frame again is fine now.
-;;      * Toggle speedbar works, width is save when toggling.
-;;      * Recalculate speedbar width if window-width - speedbar-width <= 0
-;;      * Speedbar window is now dedicated to speedbar-buffer.
-;;
-
-;;; Acknowledgements:
-;;
-;;      All emacsers ... :)
-;;
-
-;;; Bug
-;;
-;;
-
-;;; TODO
-;;
-;;
-;;
-
-;;; Require
-(require 'speedbar)
-(require 'advice)
-(require 'cl-lib)
-(eval-when-compile
-  (require 'cl))
-
-;;; Code:
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; User Customization ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defgroup sr-speedbar nil
-  "Same frame speedbar."
-  :group 'speedbar)
-
-(defcustom sr-speedbar-default-width 40
-  "Initial width of `sr-speedbar-window' under window system."
-  :type 'integer
-  :group 'sr-speedbar)
-
-(defcustom sr-speedbar-max-width 50
-  "The max width limit that window allowed.
-Default, if hide `sr-speedbar' window will remember
-window width, except the window width larger than
-this value."
-  :type 'integer
-  :group 'sr-speedbar)
-
-(defcustom sr-speedbar-auto-refresh t
-  "Automatically refresh speedbar content when changed directory.
-Default is t."
-  :type 'boolean
-  :set (lambda (symbol value)
-         (set symbol value))
-  :group 'sr-speedbar)
-
-(defcustom sr-speedbar-right-side t
-  "Show the speedbar to the right side of the current window.
-If nil, the speedbar will appear on the left.
-Default is t."
-  :type 'boolean
-  :set (lambda (symbol value)
-         (set symbol value))
-  :group 'sr-speedbar)
-
-(defcustom sr-speedbar-delete-windows nil
-  "Allow the speedbar to delete other windows before showing up.
-If nil, speedbar will not touch your window configuration.
-Otherwise `delete-other-windows' will be called before showing
-the speedbar.
-
-Default is nil."
-  :type 'boolean
-  :group 'sr-speedbar)
-
-(if (not (fboundp 'ad-advised-definition-p))
-    (defun ad-advised-definition-p (definition)
-      "Return non-nil if DEFINITION was generated from advice information."
-      (if (or (ad-lambda-p definition)
-              (macrop definition)
-              (ad-compiled-p definition))
-          (let ((docstring (ad-docstring definition)))
-            (and (stringp docstring)
-                 (get-text-property 0 'dynamic-docstring-function docstring))))))
-
-(defun sr-speedbar-handle-other-window-advice (activate)
-  "Handle advice for function `other-window'.
-If ACTIVATE is `non-nil' enable advice `sr-speedbar-other-window-advice'.
-Otherwise disable it."
-  (if activate
-      (ad-enable-advice 'other-window 'after 'sr-speedbar-other-window-advice)
-    (ad-disable-advice 'other-window 'after 'sr-speedbar-other-window-advice))
-  (ad-activate 'other-window))
-
-(defcustom sr-speedbar-skip-other-window-p nil
-  "Whether skip `sr-speedbar' window with `other-window'.
-Default, can use `other-window' select window in cyclic
-ordering of windows.  But sometimes we don't want select
-`sr-speedbar' window use `other-window'.
-Just want make `sr-speedbar' window as a view sidebar.
-
-So please turn on this option if you want skip
-`sr-speedbar' window with `other-window'.
-
-Default is nil."
-  :type 'boolean
-  :set (lambda (symbol value)
-         (set symbol value)
-         (if (fboundp 'ad-advised-definition-p)
-             (when (ad-advised-definition-p 'other-window)
-               (sr-speedbar-handle-other-window-advice value))
-           (when (ad-is-advised 'other-window)
-             (sr-speedbar-handle-other-window-advice value))))
-  :group 'sr-speedbar)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Constant ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defconst sr-speedbar-buffer-name "*SPEEDBAR*"
-  "The buffer name of sr-speedbar.")
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Variables ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defvar sr-speedbar-width sr-speedbar-default-width
-  "Initial width of speedbar-window.")
-
-(defvar sr-speedbar-window nil
-  "Speedbar window.")
-
-(defvar sr-speedbar-last-refresh-dictionary nil
-  "The last refresh dictionary record of 'sr-speedbar-refresh'.")
-
-(eval-when-compile
-  (defvar ecb-activated-window-configuration nil)
-  (defun ecb-activate ())
-  (defun ecb-deactivate ()))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Interactive functions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;###autoload
-(defun sr-speedbar-toggle ()
-  "Toggle sr-speedbar window.
-Toggle visibility of sr-speedbar by resizing
-the `sr-speedbar-window' to a minimal width
-or the last width when visible.
-Use this function to create or toggle visibility
-of a speedbar-window.  It will be created if necessary."
-  (interactive)
-  (if (sr-speedbar-exist-p)
-      (sr-speedbar-close)
-    (sr-speedbar-open)))
-
-;;;###autoload
-(defun sr-speedbar-open ()
-  "Create `sr-speedbar' window."
-  (interactive)
-  (if (not (sr-speedbar-exist-p))
-      (let ((current-window (selected-window)))
-        ;; Ensure only one window is there
-        ;; when `sr-speedbar-delete-windows' is non-nil
-        (if sr-speedbar-delete-windows
-            (delete-other-windows))
-        ;; Whether activate `other-window' advice
-        ;; to skip `sr-speedbar' window when use `other-window'.
-        (sr-speedbar-handle-other-window-advice sr-speedbar-skip-other-window-p)
-        ;; Switch buffer
-        (if (sr-speedbar-buffer-exist-p speedbar-buffer)
-            (unless (sr-speedbar-window-exist-p sr-speedbar-window)
-              (sr-speedbar-get-window))
-          (if (<= (sr-speedbar-current-window-take-width) sr-speedbar-width)
-              (setq sr-speedbar-width sr-speedbar-default-width))
-          (sr-speedbar-get-window)             ;get `sr-speedbar' window that split current window
-          (setq speedbar-buffer (get-buffer-create sr-speedbar-buffer-name)
-                speedbar-frame (selected-frame)
-                dframe-attached-frame (selected-frame)
-                speedbar-select-frame-method 'attached
-                speedbar-verbosity-level 0 ;don't say anything, i don't like ... :)
-                speedbar-last-selected-file nil)
-          (set-buffer speedbar-buffer)
-          (buffer-disable-undo speedbar-buffer) ;make disable in speedbar buffer, otherwise will occur `undo-outer-limit' error
-          (speedbar-mode)
-          (speedbar-reconfigure-keymaps)
-          (speedbar-update-contents)
-          (speedbar-set-timer 1)
-          ;; Add speedbar hook.
-          (add-hook 'speedbar-before-visiting-file-hook 'sr-speedbar-before-visiting-file-hook t)
-          (add-hook 'speedbar-before-visiting-tag-hook 'sr-speedbar-before-visiting-tag-hook t)
-          (add-hook 'speedbar-visiting-file-hook 'sr-speedbar-visiting-file-hook t)
-          (add-hook 'speedbar-visiting-tag-hook 'sr-speedbar-visiting-tag-hook t)
-          ;; Add `kill-buffer-hook'.
-          (add-hook 'kill-buffer-hook 'sr-speedbar-kill-buffer-hook) ;add `kill-buffer-hook'
-          ;; Auto refresh speedbar content
-          ;; if option `sr-speedbar-auto-refresh' is non-nil
-          (sr-speedbar-handle-auto-refresh sr-speedbar-auto-refresh))
-        (set-window-buffer sr-speedbar-window (get-buffer sr-speedbar-buffer-name))
-        (set-window-dedicated-p sr-speedbar-window t) ;make `sr-speedbar-window' dedicated to speedbar-buffer.
-        (select-window current-window))
-    (message "`sr-speedbar' window has exist.")))
-
-(defun sr-speedbar-close ()
-  "Close `sr-speedbar' window and save window width."
-  (interactive)
-  (if (sr-speedbar-exist-p)
-      (let ((current-window (selected-window)))
-        ;; Remember window width.
-        (sr-speedbar-select-window)
-        (sr-speedbar-remember-window-width)
-        ;; Close window.
-        (if (and (require 'ecb nil t)
-                 ecb-activated-window-configuration)
-            ;; Toggle ECB window when ECB window activated.
-            (progn
-              (ecb-deactivate)
-              (ecb-activate))
-          ;; Otherwise delete dedicated window.
-          (delete-window sr-speedbar-window)
-          (if (sr-speedbar-window-exist-p current-window)
-              (select-window current-window))))
-    (message "`sr-speedbar' window is not exist.")))
-
-(defun sr-speedbar-select-window ()
-  "Force the windows that contain `sr-speedbar'."
-  (interactive)
-  (if (sr-speedbar-exist-p)
-      (select-window sr-speedbar-window)
-    (message "`sr-speedbar' window is not exist.")))
-
-(defun sr-speedbar-refresh-turn-on ()
-  "Turn on refresh content automatically."
-  (interactive)
-  (setq sr-speedbar-auto-refresh t)
-  (sr-speedbar-handle-auto-refresh sr-speedbar-auto-refresh t))
-
-(defun sr-speedbar-refresh-turn-off ()
-  "Turn off refresh content automatically."
-  (interactive)
-  (setq sr-speedbar-auto-refresh nil)
-  (sr-speedbar-handle-auto-refresh sr-speedbar-auto-refresh t))
-
-(defun sr-speedbar-refresh-toggle ()
-  "Toggle refresh content status."
-  (interactive)
-  (setq sr-speedbar-auto-refresh (not sr-speedbar-auto-refresh))
-  (sr-speedbar-handle-auto-refresh sr-speedbar-auto-refresh t))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; utilise functions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun sr-speedbar-exist-p ()
-  "Return `non-nil' if `sr-speedbar' is exist.
-Otherwise return nil."
-  (and (sr-speedbar-buffer-exist-p speedbar-buffer)
-       (sr-speedbar-window-exist-p sr-speedbar-window)))
-
-(defun sr-speedbar-window-p ()
-  "Return `non-nil' if current window is `sr-speedbar' window.
-Otherwise return nil."
-  (equal sr-speedbar-buffer-name (buffer-name (window-buffer))))
-
-(defun sr-speedbar-remember-window-width ()
-  "Remember window width."
-  (let ((win-width (sr-speedbar-current-window-take-width)))
-    (if (and (sr-speedbar-window-p)
-             (> win-width 1)
-             (<= win-width sr-speedbar-max-width))
-        (setq sr-speedbar-width win-width))))
-
-(defun sr-speedbar-get-window ()
-  "Get `sr-speedbar' window."
-  (setq sr-speedbar-window
-        (split-window (selected-window)
-                      (- sr-speedbar-width)
-                      (if sr-speedbar-right-side 'right 'left))))
-
-(defun sr-speedbar-before-visiting-file-hook ()
-  "Function that hook `speedbar-before-visiting-file-hook'."
-  (select-window (get-mru-window)))
-
-(defun sr-speedbar-before-visiting-tag-hook ()
-  "Function that hook `speedbar-before-visiting-tag-hook'."
-  (select-window (get-mru-window)))
-
-(defun sr-speedbar-visiting-file-hook ()
-  "Function that hook `speedbar-visiting-file-hook'."
-  (select-window (get-mru-window)))
-
-(defun sr-speedbar-visiting-tag-hook ()
-  "Function that hook `speedbar-visiting-tag-hook'."
-  (select-window (get-mru-window)))
-
-(defun sr-speedbar-kill-buffer-hook ()
-  "Function that hook `kill-buffer-hook'."
-  (when (eq (current-buffer) speedbar-buffer)
-    (setq speedbar-frame nil
-          dframe-attached-frame nil
-          speedbar-buffer nil)
-    (speedbar-set-timer nil)
-    (remove-hook 'speedbar-before-visiting-file-hook 'sr-speedbar-before-visiting-file-hook)
-    (remove-hook 'speedbar-before-visiting-tag-hook 'sr-speedbar-before-visiting-tag-hook)
-    (remove-hook 'speedbar-visiting-file-hook 'sr-speedbar-visiting-file-hook)
-    (remove-hook 'speedbar-visiting-tag-hook 'sr-speedbar-visiting-tag-hook)))
-
-(defun sr-speedbar-refresh ()
-  "Refresh the context of speedbar."
-  (when (and (not (equal default-directory sr-speedbar-last-refresh-dictionary)) ;if directory is change
-             (not (sr-speedbar-window-p))) ;and is not in speedbar buffer
-    (setq sr-speedbar-last-refresh-dictionary default-directory)
-    (speedbar-refresh)))
-
-(defun sr-speedbar-handle-auto-refresh (activate &optional echo-show)
-  "Automatically refresh speedbar content when changed directory.
-Do nothing if option ACTIVATE is nil.
-Will display message if ECHO-SHOW is non-nil."
-  (if activate
-      (progn
-        (add-hook 'speedbar-timer-hook 'sr-speedbar-refresh)
-        (if echo-show (message "Turn on speedbar content refresh automatically.")))
-    (remove-hook 'speedbar-timer-hook 'sr-speedbar-refresh)
-    (if echo-show (message "Turn off speedbar content refresh automatically."))))
-
-(defun sr-speedbar-current-window-take-width (&optional window)
-  "Return the width that WINDOW take up.
-If WINDOW is nil, get current window."
-  (let ((edges (window-edges window)))
-    (- (nth 2 edges) (nth 0 edges))))
-
-(defun sr-speedbar-window-dedicated-only-one-p ()
-  "Only have one non-dedicated window."
-  (interactive)
-  (let ((window-number 0)
-        (dedicated-window-number 0))
-    (walk-windows
-     (lambda (w)
-       (with-selected-window w
-         (incf window-number)
-         (if (window-dedicated-p w)
-             (incf dedicated-window-number)))))
-    (if (and (> dedicated-window-number 0)
-             (= (- window-number dedicated-window-number) 1))
-        t nil)))
-
-(defun sr-speedbar-window-exist-p (window)
-  "Return `non-nil' if WINDOW is exist.
-Otherwise return nil."
-  (and window (window-live-p window)))
-
-(defun sr-speedbar-buffer-exist-p (buffer)
-  "Return `non-nil' if BUFFER is exist.
-Otherwise return nil."
-  (and buffer (buffer-live-p buffer)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Advices ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defadvice delete-other-windows (around sr-speedbar-delete-other-window-advice activate)
-  "This advice to make `sr-speedbar' window can't deleted by command `delete-other-windows'."
-  (let ((sr-speedbar-active-p (sr-speedbar-window-exist-p sr-speedbar-window)))
-    (if sr-speedbar-active-p
-        (let ((current-window (selected-window)))
-          (dolist (win (window-list))
-            (when (and (window-live-p win)
-                       (not (eq current-window win))
-                       (not (window-dedicated-p win)))
-              (delete-window win))))
-      ad-do-it)))
-
-(defadvice delete-window (before sr-speedbar-delete-window-advice activate)
-  "This advice to remember `sr-speedbar' window width before deleted.
-Use `delete-window' delete `sr-speedbar' window have same effect as `sr-speedbar-close'."
-  ;; Remember window width before deleted.
-  (sr-speedbar-remember-window-width))
-
-(defadvice pop-to-buffer (before sr-speedbar-pop-to-buffer-advice activate)
-  "This advice is to fix `pop-to-buffer' problem with dedicated window.
-Default, function `display-buffer' can't display buffer in select window
-if current window is `dedicated'.
-
-So function `display-buffer' conflict with `sr-speedbar' window, because
-`sr-speedbar' window is `dedicated' window.
-
-That is to say, when current frame just have one `non-dedicated' window,
-any functions that use `display-buffer' can't split windows
-to display buffer, even option `pop-up-windows' is enable.
-
-And the example function that can occur above problem is `pop-to-buffer'."
-  (when (and pop-up-windows                            ;`pop-up-windows' is enable
-             (sr-speedbar-window-dedicated-only-one-p) ;just have one `non-dedicated' window
-             (sr-speedbar-window-exist-p sr-speedbar-window)
-             (not (sr-speedbar-window-p)) ;not in `sr-speedbar' window
-             (not (bound-and-true-p helm-alive-p)))
-    (split-window-vertically)
-    (windmove-down)))
-
-(defadvice other-window (after sr-speedbar-other-window-advice)
-  "Default, can use `other-window' select window in cyclic ordering of windows.
-But sometimes we don't want select `sr-speedbar' window use `other-window'.
-Just want make `sr-speedbar' window as a view sidebar.
-
-This advice can make `other-window' skip `sr-speedbar' window."
-  (let ((count (or (ad-get-arg 0) 1)))
-    (when (and (sr-speedbar-window-exist-p sr-speedbar-window)
-               (eq sr-speedbar-window (selected-window)))
-      (other-window count))))
-
-(provide 'sr-speedbar)
-
-;;; sr-speedbar.el ends here
-#+end_src
-
-*** Speedbar options
-#+begin_src emacs-lisp
-  (setq
-   speedbar-show-unknown-files t
-   sr-speedbar-right-side nil)
-
-  (global-set-key (kbd "C-x C-n") 'sr-speedbar-toggle)
-#+end_src
-** plantuml
-
-plantuml is a pretty easy way to make decent looking flow chart sorta things.
-
-#+begin_src emacs-lisp
-  (use-package plantuml-mode
-    :config
-    (progn
-      (setq org-plantuml-jar-path (expand-file-name "~/Docs/plantuml.jar"))
-      (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))))
-#+end_src
-
-** Elpher
-
-Elpher is a nice little gemini / gopher client.
-
-#+begin_src emacs-lisp
-  (use-package elpher)
-#+end_src
-
-* Language Configs
 ** Ada
+:PROPERTIES:
+:ID:       0847485a-c6a3-4098-b096-f2dab861a65b
+:END:
+
 #+begin_src emacs-lisp
-  (use-package ada-mode)
+  ;; (use-package ada-mode)
 #+end_src
-** Go configuration
+
+** Lua
+:PROPERTIES:
+:ID:       5bbf0216-a279-419d-a420-9131ed0d56f0
+:END:
+
+#+begin_src emacs-lisp
+  (use-package lua-mode)
+#+end_src
+
+** scheme
+:PROPERTIES:
+:ID:       92990292-8fce-4c3f-92f8-e48b43979cda
+:END:
+
+#+begin_src emacs-lisp
+  (use-package geiser)
+  (use-package geiser-guile)
+  (use-package geiser-racket)
+#+end_src
+
+** OCaml
+:PROPERTIES:
+:ID:       d4bee8fb-db63-4ac9-91b7-ab8b3be5e57b
+:END:
+
+#+begin_src emacs-lisp
+  (use-package ocamlformat
+    :custom (ocamlformat-enable 'enable-outside-detected-project)
+    :hook (before-save . ocamlformat-before-save))
+
+  (use-package tuareg
+     :mode ("\\.ml$" . tuareg-mode))
+
+  (use-package merlin
+    :config
+    (add-hook 'tuareg-mode-hook #'merlin-mode))
+#+end_src
+
+** firewall stuff
+:PROPERTIES:
+:ID:       b9af3ace-8fef-4239-adc4-24dce2ea04b1
+:END:
+
+*** nftables
+:PROPERTIES:
+:ID:       7fce62a2-f105-46a6-a001-800e665abf4f
+:END:
+
+#+begin_src emacs-lisp
+  (use-package nftables-mode)
+#+end_src
+
+** Shell
+:PROPERTIES:
+:ID:       a12d920c-d93a-4bee-a643-9e32d796134e
+:END:
+
+#+begin_src emacs-lisp
+  (use-package shfmt)
+  (add-hook 'sh-mode-hook 'shfmt-on-save-mode)
+#+end_src
+
+** Typescript
+:PROPERTIES:
+:ID:       bf197863-f739-4f67-80a3-e1e583ebb93d
+:END:
+
+#+begin_src emacs-lisp
+  (use-package typescript-mode)
+#+end_src
+
+** Nix
+:PROPERTIES:
+:ID:       b2222546-8d4d-4e6b-8905-0988028e77c2
+:END:
+
+#+begin_src emacs-lisp
+  (use-package nix-mode
+    :mode "\\.nix\\'")
+#+end_src
+
+** Elm
+:PROPERTIES:
+:ID:       405c6f22-53fc-40c6-8513-334df1c16a39
+:END:
+
+#+begin_src emacs-lisp
+  (use-package elm-mode)
+#+end_src
+
+** Haskell
+:PROPERTIES:
+:ID:       8e14edd0-7e70-42a2-b69c-ffe19a69930e
+:END:
+
+#+begin_src emacs-lisp
+  (use-package haskell-mode)
+#+end_src
+
+** Go
+:PROPERTIES:
+:ID:       ff95f843-b8cd-4e07-985a-c2a4ee3896bb
+:END:
+
 *** go-add-tags
+:PROPERTIES:
+:ID:       3e152be1-4c73-4d67-a4ea-386ae537d3c4
+:END:
 
 This lets one select a ~struct~ or similar and auto add the ~`json:"NAME"`~ bits.
 
 #+begin_src emacs-lisp
-(use-package go-add-tags
-  :bind
-  ("C-c t" . go-add-tags))
+  (use-package go-add-tags)
 #+end_src
 
 *** go-mode
+:PROPERTIES:
+:ID:       72c1f87f-1c69-470f-b7a9-5a3642eaa4a2
+:END:
 
 This allows for things like ~gofmt~ and auto adding / removing of imports.
 
 #+begin_src emacs-lisp
   (use-package go-mode
-    :after (go-add-tags lsp-mode)
     :bind
     ("C-c t" . go-add-tags))
-  (defun lsp-go-install-save-hooks ()
-    (add-hook 'before-save-hook #'lsp-format-buffer t t)
-    (add-hook 'before-save-hook #'lsp-organize-imports t t))
-  (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+  (defun xin/eglot-organize-imports () (interactive)
+         (eglot-code-actions nil nil "source.organizeImports" t))
+  (defun xin/lsp-go-install-save-hooks ()
+    (add-hook 'before-save-hook 'xin/eglot-organize-imports nil t))
+  (add-hook 'go-mode-hook #'xin/lsp-go-install-save-hooks)
 #+end_src
 
 *** go-eldoc
+:PROPERTIES:
+:ID:       88db5063-f22c-4b0d-b6e1-e1fb3c64bced
+:END:
 
 This extends eldoc to be able to speak Go - quite handy for quickly looking
 up what things do.
 
 #+begin_src emacs-lisp
 (use-package go-eldoc
-  :after (go-mode lsp-mode)
   :hook
   (go-mode . go-eldoc-setup))
 #+end_src
 
-*** yasnippet
-
-Some go tools use this.
-
-#+begin_src emacs-lisp
-(use-package yasnippet
-  :commands yas-minor-mode
-  :hook (go-mode . yas-minor-mode))
-#+end_src
-
-** Zig configuration
-#+begin_src emacs-lisp
-  (use-package zig-mode)
-#+end_src
-
-** Lua
-
-#+begin_src emacs-lisp
-  (use-package lua-mode)
-#+end_src
-* Mail
-
-~mu~ has been the best mail client for me on emacs.
-
-** Initializing mu
-
-The defaults ~mu~ uses make no sense. ~~/.cache~ is for .. caching data, not
-persistent databases.. So we init things with sane defaults:
-
-#+begin_src shell
-mu init --muhome=/home/qbit/.mu -m /home/qbit/Maildir/fastmail/ --my-address="aaron@bolddaemon.com"
-#+end_src
-
-** General mail configuration
-
-#+begin_src emacs-lisp
-  (require 'smtpmail)
-  (setq user-mail-address              "aaron@bolddaemon.com"
-        user-full-name                 "Aaron Bieber"
-        message-send-mail-function     'smtpmail-send-it
-        message-kill-buffer-on-exit    t
-        smtpmail-smtp-user             "qbit@fastmail.com"
-        smtpmail-smtp-server           "smtp.fastmail.com"
-        smtpmail-smtp-service          465
-        smtpmail-default-smtp-server   "smtp.fastmail.com"
-        smtpmail-stream-type           'ssl)
-#+end_src
-
-** mu4e specific configs
-#+begin_src emacs-lisp
-  (if (file-exists-p "/usr/local/share/emacs/site-lisp/mu4e/mu4e.el")
-      (progn
-        (load "/usr/local/share/emacs/site-lisp/mu4e/mu4e.el")
-        (require 'mu4e)
-        (require 'mu4e-speedbar)
-        (require 'org-mu4e)
-        (setq mail-user-agent 'mu4e-user-agent
-              mu4e-get-mail-command "mbsync fastmail"
-              mu4e-update-interval 420
-              mu4e-compose-context-policy nil
-              mu4e-context-policy 'pick-first
-              mu4e-drafts-folder "/Drafts"
-              mu4e-sent-folder   "/Sent Items"
-              mu4e-trash-folder  "/Trash"
-              mu4e-maildir-shortcuts
-              '( ("/INBOX"        . ?i)
-                 ("/Archive"      . ?a)
-                 ("/Sent Items"   . ?s))
-              org-mu4e-link-query-in-headers-mode nil
-              mu4e-attachment-dir
-              (lambda (fname mtype)
-                (cond
-                 ((and fname (string-match "\\.diff$" fname))  "~/patches")
-                 ((and fname (string-match "\\.patch$" fname))  "~/patches")
-                 ((and fname (string-match "\\.diff.gz$" fname))  "~/patches")
-                 (t "~/Downloads")))
-              mu4e-bookmarks
-              `(( :name "Inbox"
-                  :query "maildir:/Inbox AND NOT flag:trashed"
-                  :key ?i)
-                ( :name "TODO"
-                  :query "maildir:/TODO AND NOT flag:trashed"
-                  :key ?T)
-                ( :name  "Unread messages"
-                  :query "flag:unread AND NOT flag:trashed AND NOT list:ports-changes.openbsd.org AND NOT list:source-changes.openbsd.org"
-                  :key ?u)
-                ( :name  "Today's messages"
-                  :query (concat
-                          "date:today..now"
-                          " AND NOT flag:trashed"
-                          " AND NOT list:ports-changes.openbsd.org"
-                          " AND NOT list:source-changes.openbsd.org")
-                  :key ?d)
-                ( :name  "Last 7 days"
-                  :query (concat
-                          "date:6d..now"
-                          " AND NOT flag:trashed"
-                          " AND NOT list:ports-changes.openbsd.org"
-                          " AND NOT list:source-changes.openbsd.org")
-                  :key ?w)
-                ( :name  "Hackers"
-                  :query "list:hackers.openbsd.org AND NOT flag:trashed"
-                  :key ?h)
-                ( :name   "Bugs"
-                  :query  "list:bugs.openbsd.org AND NOT flag:trashed"
-                  :key ?b)
-                ( :name  "Tech"
-                  :query "list:tech.openbsd.org AND NOT flag:trashed"
-                  :key ?t)
-                ( :name  "Ports"
-                  :query "list:ports.openbsd.org AND NOT flag:trashed"
-                  :key ?p)
-                ( :name "Misc"
-                  :query "list:misc.openbsd.org AND NOT flag:trashed"
-                  :key ?m)
-                ( :name "9front"
-                  :query "list:9front.9front.org AND NOT flag:trashed"
-                  :key ?9)
-                ( :name "GOT"
-                  :query "list:gameoftrees.openbsd.org AND NOT flag:trashed"
-                  :key ?g)))))
-#+end_src
-
 * org-mode
+:PROPERTIES:
+:ID:       9609380e-e2d0-48f6-a240-f67acca87d15
+:END:
 
 Oh ~org-mode~. It's the reason I started using emacs.. and it's the reason I
 can't quit!
 
 ** Config
+:PROPERTIES:
+:ID:       b8cfd8d3-1422-4cf8-b284-aea6ae701bdd
+:END:
 #+begin_src emacs-lisp
+  (require 'org-crypt)
+  (require 'org-id)
+  (org-crypt-use-before-save-magic)
+  (setq org-tags-exclude-from-inheritance '("crypt"))
+  (setq org-crypt-key "35863350BFEAC101DB1A4AF01F81112D62A9ADCE")
+
+  (defun xin/org-add-ids ()
+    "Add ID properties to org files"
+    (interactive)
+    (org-map-entries 'org-id-get-create))
+
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((plantuml . t)
      (dot      . t)
+     (shell    . t)
      (latex    . t)))
 #+end_src
 ** Publish bits
+:PROPERTIES:
+:ID:       792ab95b-b796-4c25-a675-4845ffae1462
+:END:
 
 I publish some of my notes [[https://suah.dev/p][on suah.dev/p]]. Also some recipes.
 
 #+begin_src emacs-lisp
+  (setq org-export-with-broken-links t)
+
+  (defun xin/exo-touch-and-publish (plist filename dir)
+    (progn
+      (set-file-times "~/org-roam/index.org")
+      (org-html-publish-to-html plist filename dir)))
+
   (setq my-org-publish-alist
-        '(("notes" :components ("org-notes" "notes-static" "notes-rss"))
-          ("deftly" :components ("deftly-blog" "deftly-static"))
-          ("ohmyksh" :components ("ohmy-web" "ohmy-static"))
-          ("org-notes"
-           :auto-preamble t
-           :auto-sitemap t
-           :headline-levels 4
-           :publishing-directory "/ssh:suah.dev:/var/www/htdocs/p/"
-           :publishing-function org-html-publish-to-html
-           :recursive t
-           :section-numbers nil
-           :html-head "<link rel=\"stylesheet\" href=\"https://suah.dev/p/css/stylesheet.css\" type=\"text/css\" />"
-           :html-link-home "http://suah.dev/p/"
-           :html-link-up "../"
-           :style-include-default nil
-           :sitemap-filename "index.org"
-           :sitemap-title "Notes"
-           :with-title t
-           :author-info nil
-           :creator-info nil
-           :base-directory "~/org/notes")
-          ("deftly-blog"
-           :auto-preamble t
-           :auto-sitemap t
-           :headline-levels 1
-           :publishing-directory "/ssh:suah.dev:/var/www/deftly/new/"
-           :publishing-function org-html-publish-to-html
-           :recursive t
-           :section-numbers nil
-           :html-head "<link rel=\"stylesheet\" href=\"https://deftly.net/new/css/stylesheet.css\" type=\"text/css\" />"
-           :html-link-home "http://deftly.net/new"
-           :html-link-up "../"
-           :style-include-default nil
-           :sitemap-title "Deftly.net"
-           :with-title t
-           :author-info t
-           :creator-info nil
-           :base-directory "~/org/deftly")
-          ("ohmy-web"
-           :auto-preamble t
-           :auto-sitemap nil
-           :headline-levels 2
-           :publishing-directory "/ssh:suah.dev:/var/www/deftly/ohmyksh/"
-           :publishing-function org-html-publish-to-html
-           :recursive t
-           :section-numbers nil
-           :html-head "<link rel=\"stylesheet\" href=\"https://deftly.net/ohmyksh/css/stylesheet.css\" type=\"text/css\" />"
-           :html-link-home "http://deftly.net/ohmyksh"
-           :html-link-up "../"
-           :style-include-default nil
-           :with-title t
-           :author-info t
-           :creator-info nil
-           :base-directory "~/src/ohmyksh")
-          ("notes-static"
-           :base-directory "~/org/notes"
-           :publishing-directory "/ssh:suah.dev:/var/www/htdocs/p/"
-           :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|svg"
-           :recursive t
-           :publishing-function org-publish-attachment)
-          ("deftly-static"
-           :base-directory "~/org/deftly"
-           :publishing-directory "/ssh:suah.dev:/var/www/deftly/new/"
-           :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg"
-           :recursive t
-           :publishing-function org-publish-attachment)
-          ("ohmy-static"
-           :base-directory "~/src/ohmyksh"
-           :publishing-directory "/ssh:suah.dev:/var/www/deftly/ohmyksh/"
-           :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg"
-           :recursive t
-           :publishing-function org-publish-attachment)
-          ("notes-rss"
-           :publishing-directory "/ssh:suah.dev:/var/www/htdocs/p/"
-           :publishing-function org-rss-publish-to-rss
-           :recursive t
-           :rss-extension "xml"
-           :section-numbers nil
-           :exclude ".*"
-           :include ("index.org")
-           :table-of-contents nil
-           :base-directory "~/org/notes")
-          ("mammoth"
-           :publishing-directory "/ssh:suah.dev:/var/www/mammoth/"
-           :publishing-function org-html-publish-to-html
-           :author-info nil
-           :creator-info nil
-           :section-numbers nil
-           :recursive t
-           :base-directory "~/org/mammoth")
-          ("recipes"
-           :auto-preamble t
-           :auto-sitemap t
-           :headline-levels 4
-           :publishing-directory "/ssh:suah.dev:/var/www/htdocs/recipes/"
-           :publishing-function org-html-publish-to-html
-           :recursive t
-           :section-numbers nil
-           :html-head "<link rel=\"stylesheet\" href=\"https://suah.dev/p/css/stylesheet.css\" type=\"text/css\" />"
-           :html-link-home "http://suah.dev/recipes/"
-           :html-link-up "../"
-           :style-include-default nil
-           :sitemap-filename "index.org"
-           :sitemap-title "Recipes"
-           :with-title t
-           :author-info nil
-           :creator-info nil
-           :base-directory "~/org/recipes")
-          ))
+        '(("exo" :components ("org-roam" "org-roam-static" "org-roam-org"))
+  	("bolddaemon" :components ("bolddaemon-web" "bolddaemon-static"))
+  	("notes" :components ("org-notes" "notes-static" "notes-rss"))
+  	("deftly" :components ("deftly-blog" "deftly-static"))
+  	("ohmyksh" :components ("ohmy-web" "ohmy-static"))
+  	("org-roam"
+  	 :publishing-directory "/ssh:suah.dev:/var/www/exo.suah.dev/"
+  	 :recursive t
+  	 :html-link-home "http://exo.suah.dev/"
+  	 :html-link-up "../"
+  	 :html-head "<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" />"
+  	 :publishing-function xin/exo-touch-and-publish
+  	 :base-directory "~/org-roam")
+  	("org-roam-org"
+  	 :publishing-directory "/ssh:suah.dev:/var/www/exo.suah.dev/"
+  	 :publishing-function org-org-publish-to-org
+  	 :recursive t
+  	 :base-directory "~/org-roam")
+  	("org-roam-static"
+  	 :base-directory "~/org-roam"
+  	 :recursive t
+  	 :publishing-directory "/rsync:suah.dev:/var/www/exo.suah.dev/"
+  	 :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|svg"
+  	 :publishing-function org-publish-attachment)
+  	("org-roam-rss"
+  	 :publishing-directory "/ssh:suah.dev:/var/www/exo.suah.dev/"
+  	 :publishing-function org-rss-publish-to-rss
+  	 :rss-extension "xml"
+  	 :base-directory "~/org-roam")
+  	("org-notes"
+  	 :auto-preamble t
+  	 :auto-sitemap t
+  	 :headline-levels 4
+  	 :publishing-directory "/ssh:suah.dev:/var/www/suah.dev/p/"
+  	 :publishing-function org-html-publish-to-html
+  	 :recursive t
+  	 :section-numbers nil
+  	 :html-head "<link rel=\"stylesheet\" href=\"https://suah.dev/p/css/stylesheet.css\" type=\"text/css\" />"
+  	 :html-link-home "http://suah.dev/p/"
+  	 :html-link-up "../"
+  	 :style-include-default nil
+  	 :sitemap-filename "index.org"
+  	 :sitemap-title "Notes"
+  	 :with-title t
+  	 :author-info nil
+  	 :creator-info nil
+  	 :base-directory "~/org/notes")
+  	("deftly-blog"
+  	 :auto-preamble t
+  	 :auto-sitemap t
+  	 :headline-levels 1
+  	 :publishing-directory "/ssh:suah.dev:/var/www/deftly.net/new/"
+  	 :publishing-function org-html-publish-to-html
+  	 :recursive t
+  	 :section-numbers nil
+  	 :html-head "<link rel=\"stylesheet\" href=\"https://deftly.net/new/css/stylesheet.css\" type=\"text/css\" />"
+  	 :html-link-home "http://deftly.net/new"
+  	 :html-link-up "../"
+  	 :style-include-default nil
+  	 :sitemap-title "Deftly.net"
+  	 :with-title t
+  	 :author-info t
+  	 :creator-info nil
+  	 :base-directory "~/org/deftly")
+  	("ohmy-web"
+  	 :auto-preamble t
+  	 :auto-sitemap nil
+  	 :headline-levels 2
+  	 :publishing-directory "/ssh:suah.dev:/var/www/deftly.net/ohmyksh/"
+  	 :publishing-function org-html-publish-to-html
+  	 :recursive t
+  	 :section-numbers nil
+  	 :html-head "<link rel=\"stylesheet\" href=\"https://deftly.net/ohmyksh/css/stylesheet.css\" type=\"text/css\" />"
+  	 :html-link-home "http://deftly.net/ohmyksh"
+  	 :html-link-up "../"
+  	 :style-include-default nil
+  	 :with-title t
+  	 :author-info t
+  	 :creator-info nil
+  	 :base-directory "~/src/ohmyksh")
+  	("notes-static"
+  	 :base-directory "~/org/notes"
+  	 :publishing-directory "/ssh:suah.dev:/var/www/suah.dev/p/"
+  	 :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|svg"
+  	 :recursive t
+  	 :publishing-function org-publish-attachment)
+  	("deftly-static"
+  	 :base-directory "~/org/deftly"
+  	 :publishing-directory "/ssh:suah.dev:/var/www/deftly.net/new/"
+  	 :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg"
+  	 :recursive t
+  	 :publishing-function org-publish-attachment)
+  	("ohmy-static"
+  	 :base-directory "~/src/ohmyksh"
+  	 :publishing-directory "/ssh:suah.dev:/var/www/deftly.net/ohmyksh/"
+  	 :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg"
+  	 :recursive t
+  	 :publishing-function org-publish-attachment)
+  	("notes-rss"
+  	 :publishing-directory "/ssh:suah.dev:/var/www/suah.dev/p/"
+  	 :publishing-function org-rss-publish-to-rss
+  	 :recursive t
+  	 :rss-extension "xml"
+  	 :section-numbers nil
+  	 :exclude ".*"
+  	 :include ("index.org")
+  	 :table-of-contents nil
+  	 :base-directory "~/org/notes")
+  	("recipes"
+  	 :auto-preamble t
+  	 :auto-sitemap t
+  	 :headline-levels 4
+  	 :publishing-directory "/ssh:suah.dev:/var/www/suah.dev/recipes/"
+  	 :publishing-function org-html-publish-to-html
+  	 :recursive t
+  	 :section-numbers nil
+  	 :html-head "<link rel=\"stylesheet\" href=\"https://suah.dev/p/css/stylesheet.css\" type=\"text/css\" />"
+  	 :html-link-home "http://suah.dev/recipes/"
+  	 :html-link-up "../"
+  	 :style-include-default nil
+  	 :sitemap-filename "index.org"
+  	 :sitemap-title "Recipes"
+  	 :with-title t
+  	 :author-info nil
+  	 :creator-info nil
+  	 :base-directory "~/org/recipes")
+  	("bolddaemon-web"
+  	 :auto-preamble t
+  	 :auto-sitemap t
+  	 :headline-levels 4
+  	 :publishing-directory "/ssh:suah.dev:/var/www/bolddaemon.com/"
+  	 :publishing-function org-html-publish-to-html
+  	 :recursive t
+  	 :section-numbers nil
+  	 :html-link-home "http://bolddaemon.com"
+  	 :html-link-up "../"
+  	 :html-head "<link rel=\"stylesheet\" type=\"text/css\" href=\"/style.css\" />"
+  	 :style-include-default nil
+  	 :with-title t
+  	 :author-info nil
+  	 :creator-info nil
+  	 :base-directory "~/org/bold.daemon")
+  	("bolddaemon-static"
+  	 :base-directory "~/org/bold.daemon"
+  	 :publishing-directory "/ssh:suah.dev:/var/www/bolddaemon.com/"
+  	 :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg"
+  	 :recursive t
+  	 :publishing-function org-publish-attachment)
+  	))
 #+end_src
 
 ** Capture templates
+:PROPERTIES:
+:ID:       da112c38-c9c6-4579-ba42-8ea6dc4ce0b7
+:END:
 
 #+begin_src emacs-lisp
-(setq my-org-capture-templates
-      `(("t" "TODO"
-	 entry (file+headline "~/org/todo.org" "TODOs")
-	 ,(concat
-	   "* TODO %?\n"
-	   ":PROPERTIES:\n"
-	   ":LOGGING: TODO(!) WAIT(!) DONE(!) CANCELED(!)\n"
-	   ":END:\n") :prepend t)
-	("f" "TODO with File"
-	 entry (file+headline "~/org/todo.org" "TODOs")
-	 ,(concat
-	   "* TODO %?\n"
-	   ":PROPERTIES:\n"
-	   ":LOGGING: TODO(!) WAIT(!) DONE(!) CANCELED(!)\n"
-	   ":END:\n"
-	   "%i\n  %a") :prepend t)
-	("b" "Bug"
-	 entry (file+olp+datetree "~/org/bugs.org" "Bugs")
-	 "* BUG %?\nEntered on %U\n  :PROPERTIES:\n  :FILE: %a\n  :END:\n" :prepend t)
-	("p" "Protocol"
-	 entry (file+headline "~/org/links.org" "Links")
-	 "* %^{Title}\nSource: %u, %c\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?")
-	("L" "Protocol Link" entry (file+headline "~/org/links.org" "Links")
-	 "* %? %:link\n%:description\n")
-	("j" "Journal"
-	 entry (file+olp+datetree "~/org/journal.org")
-	 "* %?\nEntered on %U\n  %i\n")))
+  (setq my-org-capture-templates
+        `(("t" "TODO"
+  	 entry (file+headline "~/org/todo.org" "TODOs")
+  	 ,(concat
+  	   "* TODO %?\n"
+  	   ":PROPERTIES:\n"
+  	   ":LOGGING: TODO(!) WAIT(!) DONE(!) CANCELED(!)\n"
+  	   ":END:\n") :prepend t)
+  	("f" "TODO with File"
+  	 entry (file+headline "~/org/todo.org" "TODOs")
+  	 ,(concat
+  	   "* TODO %?\n"
+  	   ":PROPERTIES:\n"
+  	   ":LOGGING: TODO(!) WAIT(!) DONE(!) CANCELED(!)\n"
+  	   ":END:\n"
+  	   "%i\n  %a") :prepend t)
+  	("b" "Bug"
+  	 entry (file+olp+datetree "~/org/bugs.org" "Bugs")
+  	 "* BUG %?\nEntered on %U\n  :PROPERTIES:\n  :FILE: %a\n  :END:\n" :prepend t)
+  	("p" "Protocol"
+  	 entry (file+headline "~/org/links.org" "Links")
+  	 "* %^{Title}\nSource: %u, %c\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?")
+  	("L" "Protocol Link" entry (file+headline "~/org/links.org" "Links")
+  	 "* %? %:link\n%:description\n")
+  	("j" "Journal"
+  	 entry (file+olp+datetree "~/org/journal.org")
+  	 "* %?\nEntered on %U\n  %i\n")
+  	("P" "Process Soon" entry (file+headline "~/org/todo.org" "TODOs")
+  	 "* TODO %:fromname: %a %?\nDEADLINE: %(org-insert-time-stamp (org-read-date nil t \"+2d\"))")))
 #+end_src
 
 ** org
+:PROPERTIES:
+:ID:       8ca36457-ab66-4ffc-bd18-903efcc63f1a
+:END:
 
 #+begin_src emacs-lisp
   (use-package org
@@ -1363,58 +975,17 @@ I publish some of my notes [[https://suah.dev/p][on suah.dev/p]]. Also some reci
                               (sequence "REPORT(r)" "BUG(b)" "KNOWNCAUSE(k)" "|" "FIXED(f)")
                               (sequence "|" "CANCELED(c)")))
     (setq org-publish-project-alist my-org-publish-alist)
-    (setq org-capture-templates my-org-capture-templates))
-
+    (setq org-capture-templates my-org-capture-templates)
+    (add-hook 'org-mode-hook (lambda ()
+  			     (add-hook 'before-save-hook 'xin/org-add-ids nil 'local))))
+  (use-package org-contrib)
+  (use-package ox-rss)
 #+end_src
 
-** org-roam
-
-#+begin_src emacs-lisp
-  (use-package org-roam
-    :ensure t
-    :init
-    (setq org-roam-v2-ack t)
-    :custom
-    (org-roam-directory "~/roam")
-    (org-roam-dailies-directory "journal/")
-    (org-roam-completion-everywhere t)
-    (org-roam-dailies-capture-templates
-     '(("d" "default" entry "* %<%I:%M %p>: %?"
-        :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
-    :bind (("C-c n l" . org-roam-buffer-toggle)
-           ("C-c n f" . org-roam-node-find)
-           ("C-c n i" . org-roam-node-insert)
-           :map org-mode-map
-           ("C-M-i" . completion-at-point)
-           :map org-roam-dailies-map
-           ("Y" . org-roam-dailies-capture-yesterday)
-           ("T" . org-roam-dailies-capture-tomorrow))
-    :bind-keymap
-    ("C-c n d" . org-roam-dailies-map)
-    :config
-    (require 'org-roam-dailies)
-    (org-roam-db-autosync-mode))
-#+end_src
-
-** org-brain
-#+begin_src emacs-lisp
-  ;; (use-package org-brain
-  ;;   :init
-  ;;   (setq org-brain-path "~/org/brain")
-  ;;   :config
-  ;;   (bind-key "C-c b" 'org-brain-prefix-map org-mode-map)
-  ;;   (setq org-id-track-globally t)
-  ;;   (setq org-id-locations-file "~/org/.org-id-locations")
-  ;;   (add-hook 'before-save-hook #'org-brain-ensure-ids-in-buffer)
-  ;;   (push '("b" "Brain" plain (function org-brain-goto-end)
-  ;;           "* %i%?" :empty-lines 1)
-  ;;         org-capture-templates)
-  ;;   (setq org-brain-visualize-default-choices 'all)
-  ;;   (setq org-brain-title-max-length 12)
-  ;;   (setq org-brain-include-file-entries nil
-  ;;         org-brain-file-entries-use-title nil))
-#+end_src
-** Extra bits
+*** Extra bits
+:PROPERTIES:
+:ID:       98e84516-59ad-4441-b541-baa174ffdf24
+:END:
 #+begin_src emacs-lisp
 (use-package org-journal
   :defer t
@@ -1430,27 +1001,10 @@ Add in some org-mode helpers:
 - ~org-checklist~ lets me reset checklists for reoccurring tasks.
   - This requires one to ~pkg_add a2ps~.
   - ~RESET_CHECK_BOXES~ property to be set to ~t~ on a task
-    headline. (properties can be set via ~C-c C-x d~
+    headline. properties can be set via ~C-c C-x d~
 #+begin_src emacs-lisp
-(require 'org-habit)
-;(require 'org-checklist)
-#+end_src
-
-Found this bad boy to integrate pinboard with org-mode:
-- https://gist.github.com/khinsen/7ed357eed9b27f142e4fa6f5c4ad45dd
-#+begin_src emacs-lisp
-(defun org-pinboard-store-link ()
-  "Store a link taken from a pinboard buffer."
-  (when (eq major-mode 'pinboard-mode)
-    (pinboard-with-current-pin pin
-      (org-store-link-props
-       :type "pinboard"
-       :link (alist-get 'href pin)
-       :description (alist-get 'description pin)))))
-
-(org-link-set-parameters "pinboard"
-			 :follow #'browse-url
-			 :store #'org-pinboard-store-link)
+  (require 'org-habit)
+  (require 'org-checklist)
 #+end_src
 
 Custom agenda commands for various things.
@@ -1465,15 +1019,309 @@ Custom agenda commands for various things.
 	  (org-agenda-log-mode-items '(state))))))
 #+end_src
 
-** GOT
+**** org-roam
+:PROPERTIES:
+:ID:       6af98b92-9562-46ac-8f14-0a5792ebb620
+:END:
+
+It took me a few tries to get used to using org-roam. I think I was over
+complicating using it.
 
 #+begin_src emacs-lisp
-  (setq vc-got-dir (expand-file-name "~/.emacs.d/site-lisp/vc-got-1.0"))
-  (if (file-directory-p vc-got-dir)
-      (use-package vc-got
-        :load-path vc-got-dir
-        :defer t
-        :init
-        (add-to-list 'vc-handled-backends 'Got)
-        (add-to-list 'vc-directory-exclusion-list ".got")))
+  (use-package org-roam
+    :after org
+    :custom
+    (org-roam-directory (file-truename "~/org-roam/"))
+    (org-roam-capture-templates
+     '(("d" "default" plain
+        "%?"
+        :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %U\n")
+        :unnarrowed t)
+       ("b" "book" plain
+        "- Author: /%^{Author}/\n- Year: /%^{Year}/\n\n* Highlights / Notes\n"
+        :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %U\n#+filetags: :Book:\n")
+        :unnarrowed t)
+       ))
+    :bind (("C-c n l" . org-roam-buffer-toggle)
+  	 ("C-c n f" . org-roam-node-find)
+  	 ("C-c n g" . org-roam-graph)
+  	 ("C-c n r" . org-roam-ref-add)
+  	 ("C-c n s" . org-roam-db-sync)
+  	 ("C-c n t" . org-roam-tag-add)
+  	 ("C-c n i" . org-roam-node-insert)
+  	 ("C-c n c" . org-roam-capture)
+  	 ("C-c n j" . org-roam-dailies-capture-today))
+    :config
+    (org-roam-db-autosync-enable)
+    (setq org-roam-completion-everywhere t)
+    (setq org-roam-node-display-template
+  	(concat "${title:40} "
+  		(propertize "${tags:40}" 'face 'org-tag)
+  		"${file}"))
+    (require 'org-roam-protocol))
 #+end_src
+
+Extending org with the ability to transclude makes for a powerhouse!
+#+begin_src emacs-lisp
+  (use-package org-transclusion
+    :after org
+    :config
+    (setq org-transclusion-exclude-elements '(keyword property-drawer)))
+#+end_src
+
+
+#+begin_src emacs-lisp
+  (use-package request)
+  ;; (use-package org-social)
+#+end_src
+* RSS
+:PROPERTIES:
+:ID:       842027db-4e8a-4d9b-80c9-b8fb7825a078
+:END:
+
+#+begin_src emacs-lisp
+  (use-package elfeed)
+  (use-package elfeed-protocol
+    :after elfeed
+    :config
+    (setq elfeed-protocol-feeds '(("fever+https://qbit@rss.bolddaemon.com"
+  				 :password (auth-info-password
+  					    (nth 0 (auth-source-search :max 1 :host "rss.bolddaemon.com" :require '(:secret))))
+  				 :api-url "https://rss.bolddaemon.com/fever/")))
+    (setq elfeed-protocol-enabled-protocols '(fever))
+    (elfeed-protocol-enable)
+    (defun xin/elfeed-update-feeds ()
+      (interactive)
+      (elfeed-protocol-fever-reinit "https://qbit@rss.bolddaemon.com")
+      (elfeed-update))
+    (define-key elfeed-search-mode-map (kbd "U") 'xin/elfeed-update-feeds))
+#+end_src
+
+* Mail
+:PROPERTIES:
+:ID:       428ef069-6c97-4fb9-83c2-f5f2bcea69c5
+:END:
+
+** gnus
+:PROPERTIES:
+:ID:       01bfd3e1-9b66-43e0-806a-850cf14e791d
+:END:
+
+[2024-08-22 Thu] Might need to switch go gnus. mu4e has been not showing new
+mail for some things and having to sync state between two sources is a pita.
+
+#+begin_src emacs-lisp
+  (setq gnus-use-cache t
+        gnus-use-full-window nil
+        gnus-suppress-duplicates t
+        gnus-inhibit-startup-message t
+        gnus-asynchronous t
+        gnus-sum-thread-tree-false-root ""
+        gnus-sum-thread-tree-indent " "
+        gnus-sum-thread-tree-leaf-with-other "├► "
+        gnus-sum-thread-tree-root ""
+        gnus-sum-thread-tree-single-leaf "╰► "
+        gnus-sum-thread-tree-vertical "│"
+        gnus-summary-line-format "%U%R%z %(%&user-date>;  %-15,15f  %B%s%)\n"
+        gnus-summary-thread-gathering-function 'gnus-gather-threads-by-references
+        gnus-thread-sort-functions '(gnus-thread-sort-by-date)
+        gnus-user-date-format-alist '((t . "%Y-%m-%d %H:%M"))
+        gnus-select-method '(nntp "news.gmane.io"))
+#+end_src
+
+* mu4e
+:PROPERTIES:
+:ID:       eb029614-075a-4f8d-8f64-583667bbaccc
+:END:
+~mu~ has been the best mail client for me on emacs.
+** Initializing mu
+:PROPERTIES:
+:ID:       1d7e1d28-0577-47c2-b066-486ec34c1051
+:END:
+The defaults ~mu~ uses make no sense. ~~/.cache~ is for .. caching data, not
+persistent databases.. So we init things with sane defaults:
+#+begin_src shell
+mu init --muhome=/home/qbit/.mu -m /home/qbit/Maildir/fastmail/ --my-address="aaron@bolddaemon.com"
+#+end_src
+
+** OpenBSD specific bits
+:PROPERTIES:
+:ID:       f9677956-15c6-42e9-aa62-524ea043a90e
+:END:
+
+#+begin_src emacs-lisp
+    (if (file-exists-p "/usr/local/share/emacs/site-lisp/mu4e/mu4e.el")
+        (load "/usr/local/share/emacs/site-lisp/mu4e/mu4e.el"))
+#+end_src
+
+** mu4e specific configs
+:PROPERTIES:
+:ID:       92d0499c-592e-4992-b67a-d1c8646e2b6b
+:END:
+#+begin_src emacs-lisp
+  (use-package mu4e
+    :init
+    (setq mail-user-agent 'mu4e-user-agent
+          read-mail-command 'mu4e
+  	mu4e-maildir "~/Maildir"
+          mu4e-get-mail-command "mbsync -a"
+  	mu4e-change-filenames-when-moving t
+          mu4e-update-interval 420
+          mu4e-compose-context-policy nil
+          mu4e-context-policy 'pick-first
+          mu4e-drafts-folder "/Drafts"
+          mu4e-sent-folder   "/Sent Items"
+          mu4e-trash-folder  "/Trash"
+          mu4e-maildir-shortcuts
+          '( ("/fastmail/Inbox"        . ?i)
+             ("/fastmail/Archive"      . ?a)
+             ("/segfault/Inbox"        . ?s))
+          org-mu4e-link-query-in-headers-mode nil
+          mu4e-attachment-dir
+          (lambda (fname mtype)
+            (cond
+             ((and fname (string-match "\\.diff$" fname))  "~/patches")
+             ((and fname (string-match "\\.patch$" fname))  "~/patches")
+             ((and fname (string-match "\\.diff.gz$" fname))  "~/patches")
+             (t "~/Downloads")))
+  	mu4e-contexts (list
+  		       (make-mu4e-context
+  			:name "Fastmail"
+  			:match-func
+  			(lambda (msg)
+  			  (when msg
+  			    (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
+  			:vars '((user-mail-address   . "aaron@bolddaemon.com")
+  				(mu4e-drafts-folder . "/fastmail/Drafts")
+  				(mu4e-sent-folder   . "/fastmail/Sent Items")
+  				(mu4e-refile-foldir . "/fastmail/Archive")))
+  		       (make-mu4e-context
+  			:name "Segfault"
+  			:match-func
+  			(lambda (msg)
+  			  (when msg
+  			    (string-prefix-p "/segfault" (mu4e-message-field msg :maildir))))
+  			:vars '((user-mail-address   . "qbit@segfault.rodeo")
+  				(mu4e-drafts-folder . "/segfault/Drafts")
+  				(mu4e-sent-folder   . "/segfault/Sent")
+  				(mu4e-refile-folder . "/segfault/Archive"))))
+
+          mu4e-bookmarks `(( :name "Fastmail Inbox"
+  			   :query "maildir:/fastmail/Inbox AND NOT flag:trashed"
+  			   :key ?f)
+  			 ( :name "Segfault Inbox"
+  			   :query "maildir:/segfault/Inbox AND NOT flag:trashed"
+  			   :key ?s)
+  			 ( :name "TODO"
+  			   :query "maildir:/fastmail/TODO AND NOT flag:trashed"
+  			   :key ?T)
+  			 ( :name  "Unread messages"
+  			   :query "flag:unread AND NOT flag:trashed AND NOT list:ports-changes.openbsd.org AND NOT list:source-changes.openbsd.org"
+  			   :key ?u)
+  			 ( :name  "Today's messages"
+  			   :query "date:today..now"
+  			   :key ?d)
+  			 ( :name  "Last 7 days"
+  			   :query "date:6d..now AND NOT flag:trashed AND NOT list:ports-changes.openbsd.org AND NOT list:source-changes.openbsd.org"
+  			   :key ?w)
+  			 ( :name  "Hackers"
+  			   :query "list:hackers.openbsd.org AND NOT flag:trashed"
+  			   :key ?h)
+  			 ( :name   "Bugs"
+  			   :query  "list:bugs.openbsd.org AND NOT flag:trashed"
+  			   :key ?b)
+  			 ( :name  "Tech"
+  			   :query "list:tech.openbsd.org AND NOT flag:trashed"
+  			   :key ?t)
+  			 ( :name  "Ports"
+  			   :query "list:ports.openbsd.org AND NOT flag:trashed"
+  			   :key ?p)
+  			 ( :name "Misc"
+  			   :query "list:misc.openbsd.org AND NOT flag:trashed"
+  			   :key ?m)
+  			 ( :name "9front"
+  			   :query "list:9front.9front.org AND NOT flag:trashed"
+  			   :key ?9)
+  			 ( :name "GOT"
+  			   :query "list:gameoftrees.openbsd.org AND NOT flag:trashed"
+  			   :key ?g))))
+  (add-to-list 'display-buffer-alist
+               `(,(regexp-quote mu4e-main-buffer-name)
+                 display-buffer-same-window))
+  (define-key mu4e-headers-mode-map (kbd "C-c c") 'mu4e-org-store-and-capture)
+  (define-key mu4e-view-mode-map    (kbd "C-c c") 'mu4e-org-store-and-capture)
+#+end_src
+
+** SMTP
+:PROPERTIES:
+:ID:       5b48d1b9-2fcd-475c-a9c8-51e4fcc5f454
+:END:
+
+#+begin_src emacs-lisp
+  (require 'smtpmail)
+  (setq user-mail-address              "aaron@bolddaemon.com"
+        user-full-name                 "Aaron Bieber"
+        message-send-mail-function     'smtpmail-send-it
+        message-kill-buffer-on-exit    t
+        smtpmail-smtp-user             "qbit@fastmail.com"
+        smtpmail-smtp-server           "smtp.fastmail.com"
+        smtpmail-smtp-service          465
+        smtpmail-default-smtp-server   "smtp.fastmail.com"
+        smtpmail-stream-type           'ssl)
+#+end_src
+
+* Chat
+:PROPERTIES:
+:ID:       056f6b1e-0174-49c7-97ae-3e691a077a4c
+:END:
+
+** IRC
+:PROPERTIES:
+:ID:       088a5a76-c22e-419b-a6b5-f514f6e2ddc5
+:END:
+
+#+begin_src emacs-lisp
+  (setq
+   rcirc-fill-column 'frame-width
+   rcirc-default-nick "qbit"
+   rcirc-default-port 6697
+   rcirc-default-full-name "Qbit"
+   rcirc-reconnect-delay 10
+   rcirc-reconnect-attempts 5
+   rcirc-server-alist
+   '(("bounce.bold.daemon"
+      :server-alias "bTyrfingr"
+      :encryption tls
+      :user-name "qbit@rcirc.europa/Tyrfingr")
+     ("bounce.bold.daemon"
+      :server-alias "bLibera"
+      :encryption tls
+      :user-name "qbit@rcirc.europa/Libera")
+     ("bounce.bold.daemon"
+      :server-alias "bOFTC"
+      :encryption tls
+      :channels ("#cat-v")
+      :user-name "qbit@rcirc.europa/OFTC")
+     ("bounce.bold.daemon"
+      :server-alias "bHackers"
+      :nick "abieber"
+      :encryption tls
+      :user-name "qbit@rcirc.europa/hackers")
+     ("bounce.bold.daemon"
+      :server-alias "bPorters"
+      :nick "abieber"
+      :encryption tls
+      :user-name "qbit@rcirc.europa/porters")))
+  (add-hook 'rcirc-mode-hook #'rcirc-track-minor-mode)
+  (add-hook 'rcirc-mode-hook #'flyspell-mode)
+  (setopt
+   rcirc-omit-responses '("JOIN" "PART" "QUIT" "NICK" "AWAY")
+   rcirc-bridge-bot-alist
+   '(("tapebot" . "<\\(.+?\\)>[[:space:]]+")
+     ("ijchain" . "<\\(.+?\\)>[[:space:]]+")
+     ("matrix_bridge" . "<\\(.+?\\)>[[:space:]]+")
+     ("ischain" . "<\\(.+?\\)>[[:space:]]+")))
+  (add-to-list 'display-buffer-alist
+  	     '((major-mode . rcirc-mode) display-buffer-same-window))
+#+end_src
+
