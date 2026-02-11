@@ -66,7 +66,6 @@ case "$(uname -s)" in
 	*)
 esac
 
-alias vi=nvim
 alias ag='ag --nocolor'
 alias ec='emacsclient -ct'
 alias mkae='make'
