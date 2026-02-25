@@ -1,0 +1,96 @@
+include /etc/sway/config.d/*
+
+set $mod Mod1
+
+set $left left
+set $down down
+set $up up
+set $right right
+set $menu pkill -x rofi || rofi -show combi -show-icons --no-startup-id
+
+input type:keyboard {
+  xkb_layout us
+  xkb_variant colemak
+  xkb_options ctrl:swapcaps,compose:ralt
+}
+
+input type:touchpad {
+  natural_scroll enabled
+  tap enabled
+}
+
+set $term foot
+
+bindsym $mod+r exec $menu
+bindsym $mod+Return exec $term
+bindsym $mod+Shift+l exec swaylock
+bindsym $mod+Escape kill
+floating_modifier $mod normal
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+e exec swaynag -t warning -m 'Are you sure you want to exit sway?' -b 'Yes' 'swaymsg exit'
+
+exec waybar
+#exec swaync
+exec traygent
+#exec wlsunset
+#exec nm-applet
+#exec blueman-applet
+#exec kwalletd6
+#exec kdeconnect-indicator
+#exec rm -f "$HOME/.fynado.socket"; fynado
+
+bindswitch lid:on exec sway-lock lidshut
+exec swayidle -w \
+  timeout 180 'sway-lock lock' \
+  timeout 300 'sway-lock suspend' \
+  resume 'sway-lock resume'
+
+bindsym $mod+1 workspace 1
+bindsym $mod+2 workspace 2
+bindsym $mod+3 workspace 3
+bindsym $mod+4 workspace 4
+bindsym $mod+5 workspace 5
+bindsym $mod+6 workspace 6
+bindsym $mod+7 workspace 7
+bindsym $mod+8 workspace 8
+bindsym $mod+9 workspace 9
+bindsym $mod+0 workspace 10
+
+bindsym $mod+Shift+1 move container to workspace 1
+bindsym $mod+Shift+2 move container to workspace 2
+bindsym $mod+Shift+3 move container to workspace 3
+bindsym $mod+Shift+4 move container to workspace 4
+bindsym $mod+Shift+5 move container to workspace 5
+bindsym $mod+Shift+6 move container to workspace 6
+bindsym $mod+Shift+7 move container to workspace 7
+bindsym $mod+Shift+8 move container to workspace 8
+bindsym $mod+Shift+9 move container to workspace 9
+bindsym $mod+Shift+0 move container to workspace 10
+
+bindsym $mod+h splith
+bindsym $mod+v splitv
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+bindsym $mod+Shift+minus move scratchpad
+bindsym $mod+minus scratchpad show
+
+bindsym --locked XF86AudioPlay exec playerctl play-pause
+bindsym --locked XF86AudioNext exec playerctl next
+bindsym --locked XF86AudioPrev exec playerctl previous
+
+bindsym $mod+space floating toggle
+bindsym $mod+Shift+space focus mode_toggle
+
+for_window [window_role = "pop-up"] floating enable
+for_window [window_role = "bubble"] floating enable
+for_window [window_role = "dialog"] floating enable
+for_window [window_type = "dialog"] floating enable
+for_window [window_role = "task_dialog"] floating enable
+for_window [window_type = "menu"] floating enable
+for_window [app_id = "floating"] floating enable
+
+#output eDP-1 scale 1.0
+
+include /home/qbit/.config/sway/config.d/*
