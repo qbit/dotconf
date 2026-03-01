@@ -1,3 +1,7 @@
+SAVEHIST=2000
+HISTSIZE=2000
+HISTFILE=$HOME/.zsh_history
+
 if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
   . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
 fi
